@@ -41,6 +41,8 @@ private:
 	float x_pos;
 	float z_pos;
 
+	FaceType m_faceType;
+
 public:
 	float BODY_HEIGHT;
 	DogLeg legs[4];

@@ -21,21 +21,27 @@
   <ItemGroup>
     <ClCompile Include="AppWindow.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="Dog.cpp" />
     <ClCompile Include="DogLeg.cpp" />
+    <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Room.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="consts.h" />
     <ClInclude Include="Dog.h" />
     <ClInclude Include="DogLeg.h" />
+    <ClInclude Include="Lamp.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Room.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

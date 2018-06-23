@@ -26,6 +26,8 @@ void onSpecialKeyPressCallback(int key, int x, int y)
 }
 
 
+int Scene::ROOM_SIZE = 120;
+int Scene::DOG_SIZE = 20;
 
 Scene::Scene(int argc, char** argv)
 {
@@ -36,9 +38,11 @@ Scene::Scene(int argc, char** argv)
 	glutInit(&argc, argv);
 	init();
 
-	m_dog = new Dog(10);
-	m_dog->setPosition(-150.0, 0.0, 0.0);
+	m_dog = new Dog(Scene::DOG_SIZE);
+	m_dog->setPosition(10, 10, 10);
 	m_dog->y_pos = m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f;
+
+	m_room = new Room(Scene::ROOM_SIZE);
 
 	::g_CurrentInstance = this;
 	glutDisplayFunc(::drawCallback);
@@ -89,34 +93,54 @@ void Scene::draw() {
 	Camera::lookAt();
 
 
-	glEnable(GL_TEXTURE_2D);
-	//Texture::bindToTexture(0);
+	//Set ambient light
+	/*glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	GLfloat globalAmbient[] = { 0.9, 0.9, 0.9, 1.0 };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);*/
+
+	//Spot light
+	//glShadeModel(GL_SMOOTH);
+	//glEnable(GL_LIGHT0);
+
+	this->drawCoordinateArrows();
+
+
 	glPushMatrix();
-	glColor3f(0.1372255, 0.556863, 0.1372);
-	glTranslatef(0.0f, 0.0f, 0.0f);
-	glScalef(250, 1, 250);
-	//drawCube();
+	glTranslatef(-Scene::ROOM_SIZE / 2, 0, -Scene::ROOM_SIZE / 2);
+	m_room->draw();
 	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	glPushMatrix();
-	glColor3f(1, 1, 0);
-	glTranslatef(0.0f, 35.0f, 45.0f);
-	glutSolidSphere(4, 10, 10);
-	glPopMatrix();
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	//Texture::bindToTexture(1);
-	glTranslatef(0.0f, 0.0f, 0.0f);
-	glScalef(250, 1, 20);
-	//drawCube();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	//printCameraAngle();
 
 	m_dog->draw();
 
 
 	glutSwapBuffers();
+}
+
+void Scene::drawCoordinateArrows() {
+	//Black color
+	glColor3f(0.0, 0.0, 0.0);
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(10.0, 0.0, 0.0);
+	glEnd();
+
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 10.0, 0.0);
+	glEnd();
+
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 10.0);
+	glEnd();
+
+	Utils::drawText(12.0, 0.0, 0.0, "x");
+	Utils::drawText(0.0, 12.0, 0.0, "y");
+	Utils::drawText(0.0, 0.0, 12.0, "z");
 }
 
 void Scene::reshape(int width, int height) {							/*Preventing distortion due to rescaling*/
@@ -165,22 +189,6 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 
 		break;
 	}
-	case '+':
-	{
-		Camera::rotateLookingPoint(0, 0, 1);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
-	case '-':
-	{
-		Camera::rotateLookingPoint(0, 0, -1);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
 	}
 }
 
@@ -221,7 +229,7 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 	}
 	case GLUT_KEY_PAGE_UP:
 	{
-		Camera::rotatePosition(0, 0, 1);
+		Camera::rotatePosition(0, 0, -1);
 		Camera::lookAt();
 		this->draw();
 
@@ -229,7 +237,7 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 	}
 	case GLUT_KEY_PAGE_DOWN:
 	{
-		Camera::rotatePosition(0, 0, -1);
+		Camera::rotatePosition(0, 0, 1);
 		Camera::lookAt();
 		this->draw();
 

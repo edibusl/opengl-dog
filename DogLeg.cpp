@@ -21,20 +21,24 @@ DogLeg::DogLeg(float UPPER_ANGLE, float LOWER_ANGLE, float FEET_ANGLE,
 
 void DogLeg::drawLeg() {
 	glPushMatrix();
+	
 	//Drawing upper leg
 	glRotatef(this->UPPER_ANGLE, 0.0, 0.0, 1.0);
 	glTranslatef(this->UPPER_LEN / 2.0f, 0.0f, 0.0f);
-	Utils::drawCube(this->UPPER_LEN, this->UPPER_THICKNESS, this->UPPER_WIDTH);
+	Utils::drawCube(this->UPPER_LEN, this->UPPER_THICKNESS, this->UPPER_WIDTH, FaceType::SOLID);
+	
 	//Drawing lower leg
 	glTranslatef(this->UPPER_LEN / 2.0f, 0.0f, 0.0f);
 	glRotatef(this->LOWER_ANGLE, 0.0, 0.0, 1.0);
 	glTranslatef(this->LOWER_LEN / 2.0f, 0.0f, 0.0f);
-	Utils::drawCube(this->LOWER_LEN, this->LOWER_THICKNESS, this->LOWER_WIDTH);
+	Utils::drawCube(this->LOWER_LEN, this->LOWER_THICKNESS, this->LOWER_WIDTH, FaceType::SOLID);
+	
 	//Drawing Feet
 	glColor3f(0.0f, 0.0f, 0.0f);
 	glTranslatef(this->LOWER_LEN / 2.0f, -this->LOWER_THICKNESS / 2.0f, 0.0f);
 	glRotatef(this->FEET_ANGLE, 0.0, 0.0, 1.0);
 	glTranslatef(this->FEET_LEN / 2.0f, 0.0f, 0.0f);
-	Utils::drawCube(this->FEET_LEN, this->FEET_THICKNESS, this->FEET_WIDTH);
+	Utils::drawCube(this->FEET_LEN, this->FEET_THICKNESS, this->FEET_WIDTH, FaceType::SOLID);
+
 	glPopMatrix();
 }

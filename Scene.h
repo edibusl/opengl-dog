@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "AppWindow.h"
 #include "Dog.h"
+#include "Room.h"
 
 using namespace std;
 
@@ -20,13 +21,20 @@ using namespace std;
 class Scene
 {
 private:
-	Dog * m_dog;
+	static int ROOM_SIZE;
+	static int DOG_SIZE;
+
+	Dog* m_dog;
+	Room* m_room;
 
 public:
 	Scene(int argc, char** argv);
 
 	void init();
 	void draw();
+
+	void drawCoordinateArrows();
+
 	void reshape(int width, int height);
 	void onKeyPress(unsigned char key, int x, int y);
 	void onSpecialKeyPress(unsigned char key, int x, int y);
