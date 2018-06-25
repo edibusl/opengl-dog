@@ -26,8 +26,11 @@ public:
 	static void drawText(GLfloat x, GLfloat y, GLfloat z, string text);
 
 	static void drawEllipsoid(float fA, float fB, float fC, unsigned int uiSlices, unsigned int uiStacks);
+	static void drawCylinder(GLdouble baseRadius, GLdouble length);
 
 	static void loadTexture(GLuint texture, const char* filePath);
+
+	static void getIdentityMatrix();
 
 private:
 	Utils();

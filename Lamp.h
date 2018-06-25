@@ -15,6 +15,6 @@ private:
 
 public:
 	Lamp();
-	void draw();
+	void draw(int x, int y, int z);
 };
 

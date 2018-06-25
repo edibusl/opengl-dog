@@ -14,6 +14,7 @@
 #include "AppWindow.h"
 #include "Dog.h"
 #include "Room.h"
+#include "Lamp.h"
 
 using namespace std;
 
@@ -21,11 +22,13 @@ using namespace std;
 class Scene
 {
 private:
-	static int ROOM_SIZE;
+	static int ROOM_WIDTH;
+	static int ROOM_HEIGHT;
 	static int DOG_SIZE;
 
 	Dog* m_dog;
 	Room* m_room;
+	Lamp* m_lamp;
 
 public:
 	Scene(int argc, char** argv);

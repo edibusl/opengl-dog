@@ -76,10 +76,11 @@ void Dog::resetAngles() {
 void Dog::draw() {
 	glPushMatrix();
 	glTranslatef(x_pos, y_pos, z_pos);
+	this->drawAllLegs();
 	this->drawTorso();
 	this->drawTail();
 	this->drawFace();
-	this->drawAllLegs();
+	
 	glPopMatrix();
 }
 

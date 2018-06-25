@@ -26,7 +26,8 @@ void onSpecialKeyPressCallback(int key, int x, int y)
 }
 
 
-int Scene::ROOM_SIZE = 120;
+int Scene::ROOM_WIDTH = 120;
+int Scene::ROOM_HEIGHT = 80;
 int Scene::DOG_SIZE = 20;
 
 Scene::Scene(int argc, char** argv)
@@ -42,7 +43,9 @@ Scene::Scene(int argc, char** argv)
 	m_dog->setPosition(10, 10, 10);
 	m_dog->y_pos = m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f;
 
-	m_room = new Room(Scene::ROOM_SIZE);
+	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
+
+	m_lamp = new Lamp();
 
 	::g_CurrentInstance = this;
 	glutDisplayFunc(::drawCallback);
@@ -68,11 +71,27 @@ void Scene::init() {
 	glutInitWindowPosition(AppWindow::TOP, AppWindow::LEFT);
 	glutCreateWindow("Maman 17 - Edi Buslovich");
 
-	//TODO - Aply texture
-	//glDepthFunc(GL_LESS);
-	//glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
-	//glEnable(GL_DEPTH_TEST);
-	//InitTexture();
+	//Enable depth testing when rendering objects
+	glEnable(GL_DEPTH_TEST);
+	
+
+	glMatrixMode(GL_MODELVIEW);
+	static float ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+	static float diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	static float position[] = { 60, 60, 60, 1.0 };
+	static float lmodel_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat lightDirection[] = { 0, 0, 0 };
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 10.0);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightDirection);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+	glEnable(GL_AUTO_NORMAL);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 }
 
 void Scene::draw() {
@@ -92,26 +111,21 @@ void Scene::draw() {
 	glLoadIdentity();
 	Camera::lookAt();
 
-
-	//Set ambient light
-	/*glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	GLfloat globalAmbient[] = { 0.9, 0.9, 0.9, 1.0 };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);*/
-
-	//Spot light
-	//glShadeModel(GL_SMOOTH);
-	//glEnable(GL_LIGHT0);
-
-	this->drawCoordinateArrows();
-
-
+	//Draw room
 	glPushMatrix();
-	glTranslatef(-Scene::ROOM_SIZE / 2, 0, -Scene::ROOM_SIZE / 2);
+	glTranslatef(-Scene::ROOM_WIDTH / 2, 0, -Scene::ROOM_WIDTH / 2);
 	m_room->draw();
 	glPopMatrix();
 
+	//Draw lamp
+	//m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
+
+	//Draw dog
 	m_dog->draw();
+
+	//Draw debugging coordinates
+	this->drawCoordinateArrows();
+
 
 
 	glutSwapBuffers();
@@ -119,7 +133,7 @@ void Scene::draw() {
 
 void Scene::drawCoordinateArrows() {
 	//Black color
-	glColor3f(0.0, 0.0, 0.0);
+	glColor3fv(Color::Blue);
 
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(0.0, 0.0, 0.0);

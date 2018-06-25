@@ -12,16 +12,18 @@ class Room
 {
 private:
 	static int WALL_THICKNESS;
-	float m_size;
+	int m_width;
+	int m_height;
 	GLuint m_textureWall;
 	GLuint m_textureFloor;
 	GLuint m_textureCeiling;
 
 public:
-	Room(int size);
+	Room(int width, int height);
 	void draw();
 
 private:
 	void drawWall();
+	void drawHorizontalWall();
 };
 
