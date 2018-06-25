@@ -27,6 +27,7 @@ public:
 
 	static void drawEllipsoid(float fA, float fB, float fC, unsigned int uiSlices, unsigned int uiStacks);
 	static void drawCylinder(GLdouble baseRadius, GLdouble length);
+	static void drawCone(GLdouble baseRadius, GLdouble length);
 
 	static void loadTexture(GLuint texture, const char* filePath);
 

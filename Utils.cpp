@@ -194,3 +194,10 @@ void Utils::drawCylinder(GLdouble baseRadius, GLdouble length)
 	quadratic = gluNewQuadric();
 	gluCylinder(quadratic, baseRadius, baseRadius, length, 32, 32);
 }
+
+void Utils::drawCone(GLdouble baseRadius, GLdouble length)
+{
+	GLUquadricObj *quadratic;
+	quadratic = gluNewQuadric();
+	gluCylinder(quadratic, 0, baseRadius, length, 32, 32);
+}

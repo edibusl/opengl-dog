@@ -18,6 +18,11 @@
 
 using namespace std;
 
+enum KeysControl {
+	CAMERA_LOOKAT,
+	CAMERA_POSITION,
+	LAMP_DIRECTION
+};
 
 class Scene
 {
@@ -30,6 +35,9 @@ private:
 	Room* m_room;
 	Lamp* m_lamp;
 
+	KeysControl m_curKeysControl;
+
+
 public:
 	Scene(int argc, char** argv);
 
@@ -41,5 +49,10 @@ public:
 	void reshape(int width, int height);
 	void onKeyPress(unsigned char key, int x, int y);
 	void onSpecialKeyPress(unsigned char key, int x, int y);
+
+private:
+	void handleCameraLookAt(unsigned char key);
+	void handleCameraPosition(unsigned char key);
+	void handleLampDirection(unsigned char key);
 };
 

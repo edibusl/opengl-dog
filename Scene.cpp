@@ -32,6 +32,8 @@ int Scene::DOG_SIZE = 20;
 
 Scene::Scene(int argc, char** argv)
 {
+	m_curKeysControl = KeysControl::CAMERA_POSITION;
+
 	//Init all classes
 	Camera::init();
 	AppWindow::init();
@@ -117,8 +119,9 @@ void Scene::draw() {
 	m_room->draw();
 	glPopMatrix();
 
-	//Draw lamp
-	//m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
+	//Draw lamp and set lighting
+	m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
+	//m_lamp->setLighting();
 
 	//Draw dog
 	m_dog->draw();
@@ -169,45 +172,80 @@ void Scene::reshape(int width, int height) {							/*Preventing distortion due t
 }
 
 void Scene::onKeyPress(unsigned char key, int x, int y) {
-	static int w_press_cnt = 0;
 	switch (key) {
-	case '6':
-	{
-		Camera::rotateLookingPoint(1, 0, 0);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
-	case '4':
-	{
-		Camera::rotateLookingPoint(-1, 0, 0);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
-	case '8':
-	{
-		Camera::rotateLookingPoint(0, 1, 0);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
-	case '2':
-	{
-		Camera::rotateLookingPoint(0, -1, 0);
-		Camera::lookAt();
-		this->draw();
-
-		break;
-	}
+		case 'p':
+		{
+			m_curKeysControl = KeysControl::CAMERA_POSITION;
+			break;
+		}
+		case 'e':
+		{
+			m_curKeysControl = KeysControl::CAMERA_LOOKAT;
+			break;
+		}
+		case 'l':
+		{
+			m_curKeysControl = KeysControl::LAMP_DIRECTION;
+			break;
+		}
 	}
 }
 
 void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
-	static int w_press_cnt = 0;
+	switch (m_curKeysControl)
+	{
+		case KeysControl::CAMERA_LOOKAT:
+			this->handleCameraLookAt(key);
+			break;
+		case KeysControl::CAMERA_POSITION:
+			this->handleCameraPosition(key);
+			break;
+		case KeysControl::LAMP_DIRECTION:
+			this->handleLampDirection(key);
+			break;
+	}
+}
+
+void Scene::handleCameraLookAt(unsigned char key)
+{
+	switch (key) {
+		case GLUT_KEY_RIGHT:
+		{
+			Camera::rotateLookingPoint(1, 0, 0);
+			Camera::lookAt();
+			this->draw();
+
+			break;
+		}
+		case GLUT_KEY_LEFT:
+		{
+			Camera::rotateLookingPoint(-1, 0, 0);
+			Camera::lookAt();
+			this->draw();
+
+			break;
+		}
+		case GLUT_KEY_UP:
+		{
+			Camera::rotateLookingPoint(0, 1, 0);
+			Camera::lookAt();
+			this->draw();
+
+			break;
+		}
+		case GLUT_KEY_DOWN:
+		{
+			Camera::rotateLookingPoint(0, -1, 0);
+			Camera::lookAt();
+			this->draw();
+
+			break;
+		}
+	}
+}
+
+void Scene::handleCameraPosition(unsigned char key)
+{
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 	{
@@ -255,6 +293,48 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 		Camera::lookAt();
 		this->draw();
 
+		break;
+	}
+	}
+}
+
+void Scene::handleLampDirection(unsigned char key)
+{
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+	{
+		m_lamp->rotate(1, 0, 0);
+		this->draw();
+		break;
+	}
+	case GLUT_KEY_LEFT:
+	{
+		m_lamp->rotate(-1, 0, 0);
+		this->draw();
+		break;
+	}
+	case GLUT_KEY_UP:
+	{
+		m_lamp->rotate(0, 1, 0);
+		this->draw();
+		break;
+	}
+	case GLUT_KEY_DOWN:
+	{
+		m_lamp->rotate(0, -1, 0);
+		this->draw();
+		break;
+	}
+	case GLUT_KEY_PAGE_UP:
+	{
+		m_lamp->rotate(0, 0, -1);
+		this->draw();
+		break;
+	}
+	case GLUT_KEY_PAGE_DOWN:
+	{
+		m_lamp->rotate(0, 0, 1);
+		this->draw();
 		break;
 	}
 	}

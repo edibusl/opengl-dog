@@ -11,10 +11,18 @@
 class Lamp
 {
 private:
+	int m_positionX;
+	int m_positionY;
+	int m_positionZ;
+	int m_angleX;
+	int m_angleY;
+	int m_angleZ;
 	
 
 public:
 	Lamp();
 	void draw(int x, int y, int z);
+	void setLighting();
+	void rotate(int x, int y, int z);
 };
 
