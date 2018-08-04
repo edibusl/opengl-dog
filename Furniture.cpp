@@ -1,7 +1,7 @@
 #include "Furniture.h"
 
 const GLfloat Furniture::TableLegSizeX = 2;
-const GLfloat Furniture::TableLegSizeY = 20;
+const GLfloat Furniture::TableLegSizeY = 15;
 const GLfloat Furniture::TableLegSizeZ = 2;
 const GLfloat Furniture::TableSurfaceSize = 20;
 const GLfloat Furniture::TableSurfaceThickness = 3;

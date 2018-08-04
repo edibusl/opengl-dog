@@ -48,12 +48,15 @@ Dog::Dog(int base) {
 	this->resetParameters(base);
 
 	this->m_faceType = FaceType::SOLID;
+	m_viewInvMatrix = new float[16];
 }
 
-//Resets all NECK_ANGLE and HEAD_ANGLE.
+//Resets all angles
 void Dog::resetParameters(int base) {
-	this->NECK_ANGLE = 45.0;// Angle between neck and body in dergees
-	this->HEAD_ANGLE = -this->NECK_ANGLE;
+	m_neckAngleZ = 0;
+	m_neckAngleY = 0;
+	m_tailAngleZ = -30;
+	m_tailAngleY = 0;
 }
 
 //Resets all leg angles
@@ -69,7 +72,6 @@ void Dog::resetAngles() {
 			legs[i].LOWER_ANGLE = 0.0f;
 		}
 	}
-
 }
 
 //Draw the whole dog
@@ -108,13 +110,16 @@ void Dog::drawFace() {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Neck);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Neck);
 	
-	glRotatef(this->NECK_ANGLE, 0, 0, 1); 
+	glRotatef(45 + this->m_neckAngleZ, 0, 0, 1); 
 	glRotatef(90, 0, 1, 0);
 	Utils::drawEllipsoid(NECK_WIDTH / 2, NECK_WIDTH * 0.4, NECK_LENGTH * 0.5, 100, 100);
 
 	glPopMatrix();
 
 	//Head
+	glRotatef(this->m_neckAngleZ, 0, 0, 1);
+	glRotatef(this->m_neckAngleY, 0, 1, 0);
+
 	glTranslatef(this->NECK_LENGTH * 0.3, NECK_HEIGHT * 0.8, 0.0f);
 	glColor3fv(Color::Head);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Head);
@@ -170,6 +175,10 @@ void Dog::drawFace() {
 
 	glPushMatrix();
 	glTranslatef(HEAD_RADIUS * 0.8, -HEAD_RADIUS * 0.2, 0);
+
+	//Calculate eye's position in world cooordinates (according to nose's position)
+	this->calcEyesPosition();
+
 	Utils::drawEllipsoid(2.5, 1, 1, SLICES, STACKS);
 	glPopMatrix();
 
@@ -179,7 +188,10 @@ void Dog::drawFace() {
 void Dog::drawTail() {
 	glPushMatrix();
 	glTranslatef(-this->BODY_LENGTH / 2.0f - this->TAIL_LENGTH / 2.0f, 2, 0.0f);
-	glRotatef(-30, 0, 0, 1);
+	
+	//Rotate according to user's selected angle
+	glRotatef(m_tailAngleZ, 0, 0, 1);
+	glRotatef(m_tailAngleY, 0, 1, 0);
 	
 	glColor3fv(Color::Tail);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Tail);
@@ -281,5 +293,92 @@ void Dog::move() {
 	}
 	moveNum++;
 	moveNum %= 3;
-	//this->drawDog();
+}
+
+void Dog::setTailAngle(int yDiff, int zDiff)
+{
+	m_tailAngleY += yDiff;
+	if (m_tailAngleY <= -40) {
+		m_tailAngleY = -40;
+	}
+	else if (m_tailAngleY >= 40) {
+		m_tailAngleY = 40;
+	}
+
+	m_tailAngleZ += zDiff;
+	if (m_tailAngleZ <= -32) {
+		m_tailAngleZ = -32;
+	}
+	else if (m_tailAngleZ >= 0) {
+		m_tailAngleZ = 0;
+	}
+}
+
+void Dog::setNeckAngle(int yDiff, int zDiff)
+{
+	m_neckAngleY += yDiff;
+	if (m_neckAngleY <= -40) {
+		m_neckAngleY = -40;
+	}
+	else if (m_neckAngleY >= 40) {
+		m_neckAngleY = 40;
+	}
+
+	m_neckAngleZ += zDiff;
+	if (m_neckAngleZ <= -32) {
+		m_neckAngleZ = -32;
+	}
+	else if (m_neckAngleZ >= 45) {
+		m_neckAngleZ = 45;
+	}
+}
+
+GLfloat* Dog::getEyesPosition()
+{
+	return m_eyesPosition;
+}
+
+GLfloat* Dog::getEyesLookAt()
+{
+	return m_eyesLookAt;
+}
+
+void Dog::saveViewMatrix()
+{
+	//Get the current model view matrix which includes only the view transformation
+	float* mat = Utils::getModelViewMatrix();
+	
+	//Calculate the inverse of the view matrix and save it (for later use of eye position calculation)
+	Utils::gluInvertMatrix(mat, m_viewInvMatrix);
+
+	mat = Utils::multMatrices4f(m_viewInvMatrix, mat);
+}
+
+void Dog::calcEyesPosition()
+{
+	//Get the model view matrix at the moment (just before the eyes are going to be drawn)
+	float* mat = Utils::getModelViewMatrix();
+	
+	//Multiply by the inverse matrix of the view point itself in order to disable the effect of the camera view.
+	/*
+	V = view transformation matrix
+	M = model transformation matrix
+	Current model view matrix = V*M
+	But we need just the model transformation matrix (M)
+	If we multiply by V^-1 from the left then we'll get V^-1*V*M = I*M = M
+	*/
+	mat = Utils::multMatrices4f(m_viewInvMatrix, mat);
+
+	//Multiply model transformation matrix by the unit vector in order to get the eye's position
+	float vec[] = { 1, 1, 1, 1 };
+	m_eyesPosition = Utils::multMatrixVector4f(mat, vec);
+
+
+	//Now calculate also the lookAt point. We'll make the dog look straight (parallel to the nose)
+	//To do so, translate by 10 on the X axis and then take again the modle-view matrix and calculate the new point's position
+	glTranslatef(10, 0, 0);
+	float* mat2 = Utils::getModelViewMatrix();
+	mat2 = Utils::multMatrices4f(m_viewInvMatrix, mat2);
+	m_eyesLookAt = Utils::multMatrixVector4f(mat2, vec);
+	glTranslatef(-10, 0, 0);
 }

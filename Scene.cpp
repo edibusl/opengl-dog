@@ -36,7 +36,7 @@ string Scene::WINDOW_TITLE = "Maman 17 - Edi Buslovich";
 
 Scene::Scene(int argc, char** argv)
 {
-	m_curKeysControl = KeysControl::CAMERA_POSITION;
+	m_curKeysControl = KeysControl::NONE;
 
 	//Init all classes
 	Camera::init();
@@ -48,11 +48,11 @@ Scene::Scene(int argc, char** argv)
 	m_dog = new Dog(Scene::DOG_SIZE);
 	
 	//TODO - Check dog's y position (it's for some reason above floor)
-	m_dog->setPosition(10, m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f, 10);
+	m_dog->setPosition(-10, m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f, 10);
 
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
 	m_lamp = new Lamp();
-	m_furniture = new Furniture(-60, 0, -30);
+	m_furniture = new Furniture(25, 0, -40);
 
 	::g_CurrentInstance = this;
 	glutDisplayFunc(::drawCallback);
@@ -61,7 +61,6 @@ Scene::Scene(int argc, char** argv)
 	glutSpecialFunc(::onSpecialKeyPressCallback);
 
 	Utils::maximizeWindow(WINDOW_TITLE);
-	this->initMenu();
 
 	glutMainLoop();
 }
@@ -94,6 +93,12 @@ void Scene::init() {
 	float aspect = (float)w / h;
 	gluPerspective(Camera::ANGLE, aspect, Camera::Z_NEAR, Camera::Z_FAR);
 
+
+	//Coordinate system arrows
+	m_bShowCoordinateArrows = false;
+
+	//Dog eye view
+	m_bDogEyesView = false;
 
 	//Lighting
 	static float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
@@ -128,7 +133,18 @@ void Scene::draw() {
 	glLoadIdentity();
 
 	//Set camera position
-	Camera::lookAt();
+	if (m_bDogEyesView) {
+		GLfloat* eyesPos = m_dog->getEyesPosition();
+		GLfloat* eyesLookat = m_dog->getEyesLookAt();
+		Camera::lookAt(eyesPos[0], eyesPos[1], eyesPos[2], eyesLookat[0], eyesLookat[1], eyesLookat[2]);
+	}
+	else {
+		Camera::lookAt();
+	}
+	
+
+	//Save the view matrix to be used later for eye position calculation
+	m_dog->saveViewMatrix();
 
 	//Light enabling and position
 	if (m_bLightDiffuse) {
@@ -153,7 +169,7 @@ void Scene::draw() {
 	glPopMatrix();
 
 	//Draw lamp
-	m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
+	m_lamp->draw(50, Scene::ROOM_HEIGHT, 20);
 	
 	//Draw dog
 	m_dog->draw();
@@ -164,17 +180,27 @@ void Scene::draw() {
 	//Draw debugging coordinates
 	this->drawCoordinateArrows();
 
+	//Init menu while drawing since the text of the menus may change
+	this->initMenu();
+
+	//Draw text with instructions for controlling
+	this->drawKeysControlText();
 	
 	//Debugging - Draw an item for position checking
 	//glPushMatrix();
-	//glTranslatef(m_LightPositionX, m_LightPositionY, m_LightPositionZ);
-	////Utils::drawSphere(1, 5, 5, FaceType::SOLID);
+	//glTranslatef(40, 18, 11);
+	//////Utils::drawSphere(1, 5, 5, FaceType::SOLID);
 	//Utils::drawCube(1, 1, 1, FaceType::SOLID);
 	//glPopMatrix();
+	
 	glutSwapBuffers();
 }
 
 void Scene::drawCoordinateArrows() {
+	if (!m_bShowCoordinateArrows) {
+		return;
+	}
+
 	//Black color
 	glColor3fv(Color::Blue);
 
@@ -215,7 +241,14 @@ void Scene::initMenu() {
 	int camera = glutCreateMenu(::menuCallback);
 	glutAddMenuEntry("Control camera position", KeysControl::CAMERA_POSITION);
 	glutAddMenuEntry("Control lookat", KeysControl::CAMERA_LOOKAT);
-	glutAddMenuEntry("Dog eyes' view", KeysControl::CAMERA_DOGVIEW);
+	if (m_bDogEyesView)
+	{
+		glutAddMenuEntry("Disable dog eyes' view", KeysControl::CAMERA_DOGVIEW);
+	}
+	else
+	{
+		glutAddMenuEntry("Dog eyes' view", KeysControl::CAMERA_DOGVIEW);
+	}
 
 	int light = glutCreateMenu(::menuCallback);
 	glutAddMenuEntry("Control lamp direction", KeysControl::LIGHT_DIRECTION);
@@ -225,27 +258,81 @@ void Scene::initMenu() {
 	glutAddMenuEntry("Move tail", KeysControl::MOVE_TAIL);
 	glutAddMenuEntry("Move head", KeysControl::MOVE_HEAD);
 
+	int debug = glutCreateMenu(::menuCallback);
+	if (m_bShowCoordinateArrows) {
+		glutAddMenuEntry("Hide coordinate system", KeysControl::SWITCH_COORDINATE_SYSTEM);
+	}
+	else {
+		glutAddMenuEntry("Show coordinate system", KeysControl::SWITCH_COORDINATE_SYSTEM);
+	}
+
 	int mainmenu = glutCreateMenu(::menuCallback);
 	glutAddSubMenu("Camera", camera);
 	glutAddSubMenu("Light", light);
 	glutAddSubMenu("Dog", dog);
-	glutAddMenuEntry("Exit", 0);
-
+	glutAddSubMenu("Debugging", debug);
+	glutAddMenuEntry("Stop controlling", KeysControl::NONE);
 
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 void Scene::onMenuClick(int value) {
-	if (value == KeysControl::EXIT) {
-		//glutDestroyWindow(window);
-		//exit(0);
-	}
-	else
+	m_curKeysControl = (KeysControl)value;
+	switch (m_curKeysControl)
 	{
-		m_curKeysControl = (KeysControl)value;
+		case KeysControl::SWITCH_COORDINATE_SYSTEM:
+		{
+			m_bShowCoordinateArrows = !m_bShowCoordinateArrows;
+			break;
+		}
+		case KeysControl::CAMERA_DOGVIEW:
+		{
+			m_bDogEyesView = !m_bDogEyesView;
+			break;
+		}
+
 	}
 
 	glutPostRedisplay();
+}
+
+void Scene::drawKeysControlText() {
+	switch (m_curKeysControl)
+	{
+		case KeysControl::NONE:
+		{
+			Utils::drawTextOnScreen("Right mouse click for options menu.");
+			break;
+		}
+		case KeysControl::CAMERA_POSITION:
+		{
+			Utils::drawTextOnScreen("Control camera position: ** Use keyboard's left/right keys to control X axis ** Use up/down keys to control Y axis ** Use PageUp/PageDown keys to control Z axis.");
+			break;
+		}
+		case KeysControl::CAMERA_LOOKAT:
+		{
+			Utils::drawTextOnScreen("Control camera lookat: ** Use keyboard's left/right keys to control X axis ** Use up/down keys to control Y axis ** Use PageUp/PageDown keys to control Z axis.");
+			break;
+		}
+		case KeysControl::MOVE_TAIL:
+		{
+			Utils::drawTextOnScreen("Control dog's tail: ** Use keyboard's left/right keys to move tail left and right ** Use up/down keys to move tail up and down.");
+			break;
+		}
+		case KeysControl::MOVE_HEAD:
+		{
+			Utils::drawTextOnScreen("Control dog's head: ** Use keyboard's left/right keys to move head left and right ** Use up/down keys to move head up and down.");
+			break;
+		}
+		case KeysControl::CAMERA_DOGVIEW:
+		{
+			if (m_bDogEyesView) {
+				Utils::drawTextOnScreen("Camera is positioned at dog's eyes");
+			}
+
+			break;
+		}
+	}
 }
 
 void Scene::onKeyPress(unsigned char key, int x, int y) {
@@ -258,16 +345,6 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 		case 'e':
 		{
 			m_curKeysControl = KeysControl::CAMERA_LOOKAT;
-			break;
-		}
-		case 'l':
-		{
-			m_curKeysControl = KeysControl::LAMP_DIRECTION;
-			break;
-		}
-		case 'k':
-		{
-			m_curKeysControl = KeysControl::LIGHT_DIRECTION;
 			break;
 		}
 		case 'd':
@@ -299,6 +376,12 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 			break;
 		case KeysControl::LIGHT_DIRECTION:
 			this->handleLightPosition(key);
+			break;
+		case KeysControl::MOVE_TAIL:
+			this->handleMoveTail(key);
+			break;
+		case KeysControl::MOVE_HEAD:
+			this->handleMoveHead(key);
 			break;
 	}
 }
@@ -483,6 +566,62 @@ void Scene::handleLightPosition(unsigned char key)
 		break;
 	}
 	}
+}
+
+void Scene::handleMoveTail(unsigned char key)
+{
+	switch (key) {
+		case GLUT_KEY_RIGHT:
+		{
+			m_dog->setTailAngle(4, 0);
+			break;
+		}
+		case GLUT_KEY_LEFT:
+		{
+			m_dog->setTailAngle(-4, 0);
+			break;
+		}
+		case GLUT_KEY_UP:
+		{
+			m_dog->setTailAngle(0, 2);
+			break;
+		}
+		case GLUT_KEY_DOWN:
+		{
+			m_dog->setTailAngle(0, -2);
+			break;
+		}
+	}
+
+	this->draw();
+}
+
+void Scene::handleMoveHead(unsigned char key)
+{
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+	{
+		m_dog->setNeckAngle(4, 0);
+		break;
+	}
+	case GLUT_KEY_LEFT:
+	{
+		m_dog->setNeckAngle(-4, 0);
+		break;
+	}
+	case GLUT_KEY_UP:
+	{
+		m_dog->setNeckAngle(0, 4);
+		break;
+	}
+	case GLUT_KEY_DOWN:
+	{
+		m_dog->setNeckAngle(0, -4);
+		break;
+	}
+	}
+
+	this->draw();
 }
 
 void Scene::lightRotatePosition(int x, int y, int z) {

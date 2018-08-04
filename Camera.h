@@ -32,7 +32,8 @@ public:
 	static void rotate(int dim);
 	static void rotatePosition(int x, int y, int z);
 	static void rotateLookingPoint(int x, int y, int z);
-	static void lookAt();	
+	static void lookAt();
+	static void lookAt(float eyeX, float eyeY, float eyeZ, float lookAtX, float lookAtY, float lookAtZ);
 
 private:
 	Camera();

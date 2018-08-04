@@ -11,13 +11,15 @@
 class Lamp
 {
 private:
+	static const int CABLE_LENGTH;
+
+private:
 	int m_positionX;
 	int m_positionY;
 	int m_positionZ;
 	int m_angleX;
 	int m_angleY;
-	int m_angleZ;
-	
+	int m_angleZ;	
 
 public:
 	Lamp();

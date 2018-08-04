@@ -1,5 +1,7 @@
 #include "Lamp.h"
 
+const int Lamp::CABLE_LENGTH = 30;
+
 Lamp::Lamp()
 {
 	m_angleX = 0;
@@ -27,12 +29,12 @@ void Lamp::draw(int x, int y, int z)
 	glPushMatrix();
 	glColor3fv(Color::Black);
 	glRotatef(90, 1, 0, 0);
-	Utils::drawCylinder(0.5, 15);
+	Utils::drawCylinder(0.5, CABLE_LENGTH);
 	glPopMatrix();
 	
 	//Round lamp
 	glPushMatrix();
-	glTranslatef(0, -18, 0);
+	glTranslatef(0, -CABLE_LENGTH - 3, 0);
 	glColor3fv(Color::Yellow);
 	Utils::drawSphere(4, 32, 32, FaceType::SOLID);
 	glPopMatrix();
@@ -40,7 +42,7 @@ void Lamp::draw(int x, int y, int z)
 	//Draw the lamp's base cone
 	glPushMatrix();
 	glColor3fv(Color::Black);
-	glTranslatef(0, -7, 0);
+	glTranslatef(0, -CABLE_LENGTH + 9, 0);
 	glRotatef(90, 1, 0, 0);
 	Utils::drawCone(6, 13);
 	glPopMatrix();

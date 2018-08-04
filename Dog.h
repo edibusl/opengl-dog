@@ -23,8 +23,7 @@ private:
 	float LEG_Z;//Distance of leg from the center of the body in Z direction
 	float BODY_LENGTH;
 	float BODY_WIDTH;
-	float NECK_ANGLE;
-	float HEAD_ANGLE;
+	
 	float NECK_LENGTH;
 	float NECK_HEIGHT;
 	float NECK_WIDTH;
@@ -41,6 +40,13 @@ private:
 	float x_pos;
 	float z_pos;
 
+	float m_neckAngleZ;
+	float m_neckAngleY;
+	float m_tailAngleY;
+	float m_tailAngleZ;
+	GLfloat* m_eyesPosition;
+	GLfloat* m_eyesLookAt;
+	float* m_viewInvMatrix;
 	FaceType m_faceType;
 
 public:
@@ -53,6 +59,11 @@ public:
 	Dog(int base);
 	void draw();
 	void setPosition(float x, float y, float z);
+	void setTailAngle(int yDiff, int zDiff);
+	void setNeckAngle(int yDiff, int zDiff);
+	GLfloat* getEyesPosition();
+	GLfloat* getEyesLookAt();
+	void saveViewMatrix();
 
 private:	
 	void resetParameters(int base);
@@ -62,5 +73,5 @@ private:
 	void drawAllLegs();
 	void move();
 	void resetAngles();
+	void calcEyesPosition();
 };
-

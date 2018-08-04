@@ -64,3 +64,11 @@ void Camera::lookAt() {
 		Camera::VUP_X, Camera::VUP_Y, Camera::VUP_Z
 	);
 }
+
+void Camera::lookAt(float eyeX, float eyeY, float eyeZ, float lookAtX, float lookAtY, float lookAtZ) {
+	gluLookAt(
+		eyeX, eyeY, eyeZ,
+		lookAtX, lookAtY, lookAtZ,
+		Camera::VUP_X, Camera::VUP_Y, Camera::VUP_Z
+	);
+}

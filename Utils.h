@@ -24,6 +24,7 @@ public:
 	static void drawSphere(float radius, float slices, float stacks, FaceType faceType);
 	static float abs(float a);
 	static void drawText(GLfloat x, GLfloat y, GLfloat z, string text);
+	static void drawTextOnScreen(string text);
 
 	static void drawEllipsoid(float fA, float fB, float fC, unsigned int uiSlices, unsigned int uiStacks);
 	static void drawCylinder(GLdouble baseRadius, GLdouble length);
@@ -31,7 +32,10 @@ public:
 
 	static void loadTexture(GLuint texture, const char* filePath);
 
-	static void getIdentityMatrix();
+	static float* getModelViewMatrix();
+	static GLfloat* multMatrixVector4f(float* matrix, float* vector);
+	static GLfloat* multMatrices4f(float* matrix1, float* matrix2);
+	static bool gluInvertMatrix(const float m[16], float invOut[16]);
 
 	static void maximizeWindow(string windowTitle);
 
