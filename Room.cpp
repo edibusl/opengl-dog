@@ -5,9 +5,6 @@
 #include "stb_image.h"
 
 
-
-int Room::WALL_THICKNESS = 5;
-
 Room::Room(int width, int height)
 {
 	this->m_width = width;

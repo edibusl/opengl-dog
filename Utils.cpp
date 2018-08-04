@@ -33,7 +33,6 @@ void Utils::drawCube(float length, float width, float height, FaceType faceType)
 void Utils::drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/) {
 	glBegin(GL_QUADS);
 	
-	
 	glVertex3f(length / 2.0f, height / 2.0f, -width / 2.0f);
 	glVertex3f(-length / 2.0f, height / 2.0f, -width / 2.0f);
 	glVertex3f(-length / 2.0f, height / 2.0f, width / 2.0f);

@@ -24,6 +24,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Dog.cpp" />
     <ClCompile Include="DogLeg.cpp" />
+    <ClCompile Include="Furniture.cpp" />
     <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="consts.h" />
     <ClInclude Include="Dog.h" />
     <ClInclude Include="DogLeg.h" />
+    <ClInclude Include="Furniture.h" />
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Scene.h" />

@@ -11,7 +11,6 @@
 class Room
 {
 private:
-	static int WALL_THICKNESS;
 	int m_width;
 	int m_height;
 	GLuint m_textureWall;

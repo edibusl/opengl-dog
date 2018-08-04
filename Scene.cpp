@@ -25,9 +25,8 @@ void onSpecialKeyPressCallback(int key, int x, int y)
 	g_CurrentInstance->onSpecialKeyPress(key, x, y);
 }
 
-
-int Scene::ROOM_WIDTH = 120;
-int Scene::ROOM_HEIGHT = 80;
+int Scene::ROOM_WIDTH = 160;
+int Scene::ROOM_HEIGHT = 120;
 int Scene::DOG_SIZE = 20;
 
 Scene::Scene(int argc, char** argv)
@@ -42,11 +41,13 @@ Scene::Scene(int argc, char** argv)
 	init();
 
 	m_dog = new Dog(Scene::DOG_SIZE);
-	m_dog->setPosition(10, 10, 10);
-	m_dog->y_pos = m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f;
+	
+	//TODO - Check dog's y position (it's for some reason above floor)
+	m_dog->setPosition(10, m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f, 10);
 
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
 	m_lamp = new Lamp();
+	m_furniture = new Furniture(-60, 0, -30);
 
 	::g_CurrentInstance = this;
 	glutDisplayFunc(::drawCallback);
@@ -145,9 +146,11 @@ void Scene::draw() {
 	//Draw lamp
 	m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
 	
-
 	//Draw dog
 	m_dog->draw();
+
+	//Draw furniture
+	m_furniture->draw();
 
 	//Draw debugging coordinates
 	this->drawCoordinateArrows();

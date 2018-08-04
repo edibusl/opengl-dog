@@ -13,9 +13,6 @@ void Lamp::draw(int x, int y, int z)
 	m_positionY = y;
 	m_positionZ = z;
 
-	return;
-	///////////////////////////////////////////////////////////////////////////////////
-
 	//Translate whole lamp's position
 	glPushMatrix();
 	glTranslatef(x, y, z);

@@ -15,6 +15,7 @@
 #include "Dog.h"
 #include "Room.h"
 #include "Lamp.h"
+#include "Furniture.h"
 
 using namespace std;
 
@@ -35,6 +36,7 @@ private:
 	Dog* m_dog;
 	Room* m_room;
 	Lamp* m_lamp;
+	Furniture* m_furniture;
 
 	KeysControl m_curKeysControl;
 
