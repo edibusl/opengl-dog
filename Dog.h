@@ -29,7 +29,7 @@ private:
 	float NECK_HEIGHT;
 	float NECK_WIDTH;
 	float HEAD_HEIGHT;
-	float HEAD_LENGTH;
+	float HEAD_RADIUS;
 	float HEAD_WIDTH;
 	float UPPER_HEAD_HEIGHT;
 	float UPPER_HEAD_LENGTH;

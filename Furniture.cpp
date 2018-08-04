@@ -25,6 +25,10 @@ void Furniture::draw() {
 	glTranslatef(m_PosX, m_PosY + (Furniture::TableLegSizeY / 2), m_PosZ);
 
 	//Table legs
+	glColor3fv(Color::TableLeg);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::TableLeg);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TableLeg);
+
 	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
 	glTranslatef(TableSurfaceSize, 0, 0);
 	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
@@ -35,6 +39,10 @@ void Furniture::draw() {
 	glTranslatef(0, 0, -TableSurfaceSize);
 
 	//Table surface
+	glColor3fv(Color::TableSurface);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::TableSurface);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TableSurface);
+
 	glPushMatrix();
 	glTranslatef(TableSurfaceSize / 2, (TableLegSizeY / 2) - (TableSurfaceThickness / 2), TableSurfaceSize / 2);
 	glRotatef(90, 0, 1, 0);
@@ -42,6 +50,11 @@ void Furniture::draw() {
 	glPopMatrix();
 
 	//Teapot
+	glColor3fv(Color::TeapotAmbient);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::TeapotAmbient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TeapotDiffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::TeapotSpecular);
+
 	glPushMatrix();
 	glTranslatef(TableSurfaceSize / 2, (TableLegSizeY / 2) + TableSurfaceThickness, TableSurfaceSize / 2);
 	glutSolidTeapot(TeapotSize);

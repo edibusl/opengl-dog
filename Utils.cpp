@@ -33,35 +33,78 @@ void Utils::drawCube(float length, float width, float height, FaceType faceType)
 void Utils::drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/) {
 	glBegin(GL_QUADS);
 	
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, width / 2.0f);
 
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, -width / 2.0f);
 
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, -width / 2.0f);
 
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, -width / 2.0f);
 
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(-length / 2.0f, -height / 2.0f, width / 2.0f);
 
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, -width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, width / 2.0f);
+
+	glNormal3f(0, 1.0, 0.0);
 	glVertex3f(length / 2.0f, -height / 2.0f, -width / 2.0f);
+
 	glEnd();
 }
 
@@ -184,4 +227,16 @@ void Utils::drawCone(GLdouble baseRadius, GLdouble length)
 	GLUquadricObj *quadratic;
 	quadratic = gluNewQuadric();
 	gluCylinder(quadratic, 0, baseRadius, length, 32, 32);
+}
+
+void Utils::maximizeWindow(string windowTitle)
+{
+	HWND win_handle = FindWindow(0, windowTitle.c_str());
+	if (!win_handle)
+	{
+		printf("!!! Failed FindWindow\n");
+	}
+
+	SetWindowLong(win_handle, GWL_STYLE, (GetWindowLong(win_handle, GWL_STYLE) | WS_MAXIMIZE));
+	ShowWindowAsync(win_handle, SW_SHOWMAXIMIZED);
 }

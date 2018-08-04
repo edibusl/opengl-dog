@@ -14,6 +14,7 @@ public:
 	static const GLfloat Yellow[];
 	static const GLfloat Purple[];
 	static const GLfloat Grey[];
+	static const GLfloat Brown[];
 	
 	static const GLfloat Leg[];
 	static const GLfloat Tail[];
@@ -22,4 +23,14 @@ public:
 	static const GLfloat Face[];
 	static const GLfloat Neck[];
 	static const GLfloat Head[];
+	static const GLfloat Ear[];
+	static const GLfloat Eye[];
+	static const GLfloat Mouth[];
+	static const GLfloat Nose[];
+
+	static const GLfloat TableLeg[];
+	static const GLfloat TableSurface[];
+	static const GLfloat TeapotAmbient[];
+	static const GLfloat TeapotDiffuse[];
+	static const GLfloat TeapotSpecular[];
 };

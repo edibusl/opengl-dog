@@ -33,6 +33,8 @@ public:
 
 	static void getIdentityMatrix();
 
+	static void maximizeWindow(string windowTitle);
+
 private:
 	Utils();
 	~Utils();

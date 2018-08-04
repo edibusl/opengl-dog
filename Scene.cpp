@@ -12,6 +12,10 @@ void drawCallback()
 {
 	g_CurrentInstance->draw();
 }
+void menuCallback(int value)
+{
+	g_CurrentInstance->onMenuClick(value);
+}
 void reshapeCallback(int width, int height)
 {
 	g_CurrentInstance->reshape(width, height);
@@ -28,6 +32,7 @@ void onSpecialKeyPressCallback(int key, int x, int y)
 int Scene::ROOM_WIDTH = 160;
 int Scene::ROOM_HEIGHT = 120;
 int Scene::DOG_SIZE = 20;
+string Scene::WINDOW_TITLE = "Maman 17 - Edi Buslovich";
 
 Scene::Scene(int argc, char** argv)
 {
@@ -54,6 +59,10 @@ Scene::Scene(int argc, char** argv)
 	glutReshapeFunc(::reshapeCallback);
 	glutKeyboardFunc(::onKeyPressCallback);
 	glutSpecialFunc(::onSpecialKeyPressCallback);
+
+	Utils::maximizeWindow(WINDOW_TITLE);
+	this->initMenu();
+
 	glutMainLoop();
 }
 
@@ -71,7 +80,7 @@ void Scene::init() {
 	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_FAR);
 	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT*AppWindow::ASPECT;
 	glutInitWindowPosition(AppWindow::TOP, AppWindow::LEFT);
-	glutCreateWindow("Maman 17 - Edi Buslovich");
+	glutCreateWindow(WINDOW_TITLE.c_str());
 
 	//Enable depth testing when rendering objects
 	glEnable(GL_DEPTH_TEST);
@@ -162,9 +171,6 @@ void Scene::draw() {
 	////Utils::drawSphere(1, 5, 5, FaceType::SOLID);
 	//Utils::drawCube(1, 1, 1, FaceType::SOLID);
 	//glPopMatrix();
-
-
-
 	glutSwapBuffers();
 }
 
@@ -203,6 +209,43 @@ void Scene::reshape(int width, int height) {
 	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_FAR);
 	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT*AppWindow::ASPECT;
 	glViewport(0, 0, AppWindow::WIDTH, AppWindow::HEIGHT);
+}
+
+void Scene::initMenu() {
+	int camera = glutCreateMenu(::menuCallback);
+	glutAddMenuEntry("Control camera position", KeysControl::CAMERA_POSITION);
+	glutAddMenuEntry("Control lookat", KeysControl::CAMERA_LOOKAT);
+	glutAddMenuEntry("Dog eyes' view", KeysControl::CAMERA_DOGVIEW);
+
+	int light = glutCreateMenu(::menuCallback);
+	glutAddMenuEntry("Control lamp direction", KeysControl::LIGHT_DIRECTION);
+	glutAddMenuEntry("Change light intensity", KeysControl::LIGHT_INTENSITY);
+
+	int dog = glutCreateMenu(::menuCallback);
+	glutAddMenuEntry("Move tail", KeysControl::MOVE_TAIL);
+	glutAddMenuEntry("Move head", KeysControl::MOVE_HEAD);
+
+	int mainmenu = glutCreateMenu(::menuCallback);
+	glutAddSubMenu("Camera", camera);
+	glutAddSubMenu("Light", light);
+	glutAddSubMenu("Dog", dog);
+	glutAddMenuEntry("Exit", 0);
+
+
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+void Scene::onMenuClick(int value) {
+	if (value == KeysControl::EXIT) {
+		//glutDestroyWindow(window);
+		//exit(0);
+	}
+	else
+	{
+		m_curKeysControl = (KeysControl)value;
+	}
+
+	glutPostRedisplay();
 }
 
 void Scene::onKeyPress(unsigned char key, int x, int y) {

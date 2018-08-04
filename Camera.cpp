@@ -32,9 +32,9 @@ void Camera::init() {
 	Camera::ANGLE = 90.0;
 	Camera::Z_NEAR = 5.0;
 	Camera::Z_FAR = 205.0;
-	Camera::EYE_X = 13;
-	Camera::EYE_Y = 14;
-	Camera::EYE_Z = 51;
+	Camera::EYE_X = 50;
+	Camera::EYE_Y = 20;
+	Camera::EYE_Z = 40;
 	Camera::LOOK_AT_X = 0;
 	Camera::LOOK_AT_Y = 0;
 	Camera::LOOK_AT_Z = 0;
