@@ -13,7 +13,6 @@ using namespace std;
 /*
 Tasks list:
 
-* Draw x,y,z arrow coordinates
 * Replace drawCube functions with glut implementations
 * Replace the dog drawing and also its initial position
 * Fix all classes to be more OOP

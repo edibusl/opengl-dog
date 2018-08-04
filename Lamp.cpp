@@ -2,9 +2,6 @@
 
 Lamp::Lamp()
 {
-	glDepthFunc(GL_LESS);
-	glShadeModel(GL_SMOOTH);
-
 	m_angleX = 0;
 	m_angleY = 0;
 	m_angleZ = 0;
@@ -15,6 +12,9 @@ void Lamp::draw(int x, int y, int z)
 	m_positionX = x;
 	m_positionY = y;
 	m_positionZ = z;
+
+	return;
+	///////////////////////////////////////////////////////////////////////////////////
 
 	//Translate whole lamp's position
 	glPushMatrix();
@@ -55,47 +55,26 @@ void Lamp::draw(int x, int y, int z)
 	glPopMatrix();
 }
 
-void Lamp::setLighting()
+void Lamp::setLighting(boolean enabled)
 {
-	GLfloat colorWhite[] = { 0.5, 0.5, 0.5, 1.0 };
+	if (!enabled) {
+		glDisable(GL_LIGHT2);
 
-	GLfloat lightPosition1[] = { m_positionX, m_positionY - 15, m_positionZ, 1 };
-	GLfloat lightDirection1[] = { 10, 10, 10 };
+		return;
+	}
 
-	glEnable(GL_LIGHT1);
+	GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat lightPosition[] = { m_positionX, m_positionY - 15, m_positionZ, 1 };
+	GLfloat lightDirection[] = { 10, 10, 10, 1 };
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, colorWhite);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, colorWhite);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, colorWhite);
-
-
-	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 10.0);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightDirection1);
-
-
-	return;
-	//############################################################################
-
-	//Set global ambient light
-	glEnable(GL_LIGHTING);
-	/*GLfloat globalAmbient[] = { 0.9, 0.9, 0.9, 1.0 };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);*/
-
-	//Spot light
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_LIGHT0);
-	GLfloat whiteColor[] = { 0.9, 0.9, 0.9, 1.0 };
-	GLfloat lightPosition[] = { m_positionX, m_positionY - 15, m_positionZ, 0 };
-	GLfloat lightDirection[] = { 100, 100, 100 };
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, whiteColor);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteColor);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteColor);
-	//glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
-	//glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 30.0);
-	//glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.5);
+	glEnable(GL_LIGHT2);
+	glLightfv(GL_LIGHT2, GL_AMBIENT, Color::Black);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, Color::White);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
+	glLightfv(GL_LIGHT2, GL_POSITION, lightPosition);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 10.0); //30 degress cutoff angle
+	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.5); //attenuation
+	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightDirection);
 }
 
 void Lamp::rotate(int x, int y, int z) {

@@ -34,7 +34,6 @@ void DogLeg::drawLeg() {
 	Utils::drawCube(this->LOWER_LEN, this->LOWER_THICKNESS, this->LOWER_WIDTH, FaceType::SOLID);
 	
 	//Drawing Feet
-	glColor3f(0.0f, 0.0f, 0.0f);
 	glTranslatef(this->LOWER_LEN / 2.0f, -this->LOWER_THICKNESS / 2.0f, 0.0f);
 	glRotatef(this->FEET_ANGLE, 0.0, 0.0, 1.0);
 	glTranslatef(this->FEET_LEN / 2.0f, 0.0f, 0.0f);

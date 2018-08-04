@@ -34,23 +34,6 @@ void Utils::drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/
 	glBegin(GL_QUADS);
 	
 	
-	//static float front_mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
-	//static float front_mat_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
-	//static float back_mat_diffuse[] = { 1.0, 1.0, 0.2, 1.0 };
-	//static float back_mat_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, front_mat_diffuse);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, front_mat_ambient);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, front_mat_diffuse);
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, front_mat_diffuse);
-
-	static float all_colors[] = { 0.2, 0.2, 0.2, 1.0 };
-	static float specular_color[] = { 0.8, 0.1, 0.5, 1.0 };
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, all_colors);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_color);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 120.0);
-	
-	
-
 	glVertex3f(length / 2.0f, height / 2.0f, -width / 2.0f);
 	glVertex3f(-length / 2.0f, height / 2.0f, -width / 2.0f);
 	glVertex3f(-length / 2.0f, height / 2.0f, width / 2.0f);
@@ -147,13 +130,15 @@ void Utils::drawEllipsoid(float fA, float fB, float fC, unsigned int uiSlices, u
 {
 	float tStep = (PI) / (float)uiSlices;
 	float sStep = (PI) / (float)uiStacks;
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (float t = -PI / 2; t <= (PI / 2) + .0001; t += tStep)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
 		for (float s = -PI; s <= PI + .0001; s += sStep)
 		{
+			glNormal3f(1.0, 0.0, 0.0);
 			glVertex3f(fA * cos(t) * cos(s), fB * cos(t) * sin(s), fC * sin(t));
+
+			glNormal3f(1.0, 0.0, 0.0);
 			glVertex3f(fA * cos(t + tStep) * cos(s), fB * cos(t + tStep) * sin(s), fC * sin(t + tStep));
 		}
 		glEnd();

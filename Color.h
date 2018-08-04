@@ -14,4 +14,12 @@ public:
 	static const GLfloat Yellow[];
 	static const GLfloat Purple[];
 	static const GLfloat Grey[];
+	
+	static const GLfloat Leg[];
+	static const GLfloat Tail[];
+	static const GLfloat Torso[];
+	static const GLfloat TorsoDiffuse[];
+	static const GLfloat Face[];
+	static const GLfloat Neck[];
+	static const GLfloat Head[];
 };

@@ -21,7 +21,8 @@ using namespace std;
 enum KeysControl {
 	CAMERA_LOOKAT,
 	CAMERA_POSITION,
-	LAMP_DIRECTION
+	LAMP_DIRECTION,
+	LIGHT_DIRECTION
 };
 
 class Scene
@@ -37,6 +38,11 @@ private:
 
 	KeysControl m_curKeysControl;
 
+	int m_LightPositionX;
+	int m_LightPositionY;
+	int m_LightPositionZ;
+	bool m_bLightDiffuse;
+	bool m_bLightSpecular;
 
 public:
 	Scene(int argc, char** argv);
@@ -54,5 +60,7 @@ private:
 	void handleCameraLookAt(unsigned char key);
 	void handleCameraPosition(unsigned char key);
 	void handleLampDirection(unsigned char key);
+	void handleLightPosition(unsigned char key);
+	void lightRotatePosition(int x, int y, int z);
 };
 

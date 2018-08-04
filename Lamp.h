@@ -22,7 +22,7 @@ private:
 public:
 	Lamp();
 	void draw(int x, int y, int z);
-	void setLighting();
+	void setLighting(boolean enabled);
 	void rotate(int x, int y, int z);
 };
 

@@ -12,8 +12,8 @@ Ctor - Takes the base length(Torso legth) and setup all angles.
 Dog::Dog(int base) {
 	this->BASE = base;
 	this->canMove = false;
-	this->SLICES = 10;
-	this->STACKS = 10;
+	this->SLICES = 50;
+	this->STACKS = 50;
 	this->moveNum = 1;
 	this->BODY_LENGTH = this->BASE;
 	this->BODY_HEIGHT = this->BASE*0.3;
@@ -87,62 +87,77 @@ void Dog::draw() {
 //Draw the body
 void Dog::drawTorso() {
 	glPushMatrix();
-	glColor3f(0.5f, 0.35f, 0.05f);
-	Utils::drawCube(BODY_LENGTH, BODY_HEIGHT, BODY_WIDTH, this->m_faceType);
+
+	glColor3fv(Color::Torso);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Torso);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TorsoDiffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::White);
+
+	Utils::drawEllipsoid(BODY_LENGTH * 0.7, BODY_HEIGHT * 0.8, BODY_WIDTH, 10, 10);
 	glPopMatrix();
 }
 
 void Dog::drawFace() {
 	glPushMatrix();
-	//Creating Neck
+	
+	//Neck
 	glTranslatef(this->BODY_LENGTH*0.65, BODY_HEIGHT / 2.0f, 0.0f);
+	glPushMatrix();
 	glRotatef(this->NECK_ANGLE, 0.0f, 0.0f, 1.0f);
-	glColor3f(0.5f, 0.35f, 0.05f);
+	glColor3fv(Color::Neck);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Neck);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Neck);
 	Utils::drawCube(NECK_LENGTH, NECK_HEIGHT, NECK_WIDTH, this->m_faceType);
-
-	//Creating Face
-	glRotatef(this->HEAD_ANGLE, 0.0f, 0.0f, 1.0f);
-	glTranslatef(this->NECK_LENGTH*0.75, NECK_HEIGHT, 0.0f);
-	glColor3fv(Color::Black);
-	Utils::drawCube(HEAD_LENGTH, HEAD_HEIGHT, HEAD_WIDTH, this->m_faceType);
-	//Utils::drawSphere(HEAD_LENGTH, this->SLICES, this->STACKS, this->m_faceType);
-	//Utils::drawEllipsoid(HEAD_LENGTH, HEAD_HEIGHT, HEAD_WIDTH, this->SLICES, this->STACKS);
-
-	//Creating Mouth
-	glPushMatrix();
-	glTranslatef(this->HEAD_LENGTH*0.5, 0.0f, 0.0f);
-	glColor3f(0.0f, 0.0f, 0.0f);
-	Utils::drawCube(HEAD_LENGTH*0.2, HEAD_HEIGHT, HEAD_WIDTH, this->m_faceType);
-	glColor3f(0.5f, 0.35f, 0.05f);
-	Utils::drawCube(HEAD_LENGTH*0.2, HEAD_HEIGHT*0.1, HEAD_WIDTH, this->m_faceType);
 	glPopMatrix();
 
-	//Drawing upper head
-	glTranslatef(-1 * this->NECK_LENGTH*0.5, this->NECK_HEIGHT*0.25f, 0.0f);
-	glColor3f(0, 0, 0);
-	glPointSize(10);
-	glColor3f(0.5f, 0.35f, 0.05f);
-	//Utils::drawCube(UPPER_HEAD_LENGTH, UPPER_HEAD_HEIGHT, UPPER_HEAD_WIDTH, this->m_faceType);
-	Utils::drawSphere(UPPER_HEAD_LENGTH, this->SLICES, this->STACKS, this->m_faceType);
+	//Head
+	glTranslatef(this->NECK_LENGTH*0.6, NECK_HEIGHT, 0.0f);
+	glColor3fv(Color::Head);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Head);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Head);
+	Utils::drawEllipsoid(HEAD_LENGTH, HEAD_LENGTH, HEAD_LENGTH, 10, 10);
 
-	//Drawing Eyes
-	glPushMatrix();
-	glTranslatef(this->UPPER_HEAD_LENGTH*0.7, this->UPPER_HEAD_HEIGHT*0.45, -this->UPPER_HEAD_WIDTH*0.40);
-	glColor3f(0.0f, 0.0f, 0.0f);
-	Utils::drawSphere(this->EYE_RADIUS, this->SLICES, this->STACKS, this->m_faceType);
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(this->UPPER_HEAD_LENGTH*0.7, this->UPPER_HEAD_HEIGHT*0.45, this->UPPER_HEAD_WIDTH*0.40);
-	glColor3f(0.0f, 0.0f, 0.0f);
-	Utils::drawSphere(this->EYE_RADIUS, this->SLICES, this->STACKS, this->m_faceType);
-	glPopMatrix();
+
+	////Creating Mouth
+	//glPushMatrix();
+	//glTranslatef(this->HEAD_LENGTH*0.5, 0.0f, 0.0f);
+	//glColor3f(0.0f, 0.0f, 0.0f);
+	//Utils::drawCube(HEAD_LENGTH*0.2, HEAD_HEIGHT, HEAD_WIDTH, this->m_faceType);
+	//glColor3f(0.5f, 0.35f, 0.05f);
+	//Utils::drawCube(HEAD_LENGTH*0.2, HEAD_HEIGHT*0.1, HEAD_WIDTH, this->m_faceType);
+	//glPopMatrix();
+
+	////Drawing head
+	//glTranslatef(-1 * this->NECK_LENGTH*0.5, this->NECK_HEIGHT*0.25f, 0.0f);
+	//
+
+	////Drawing Eyes
+	//glPushMatrix();
+	//glTranslatef(this->UPPER_HEAD_LENGTH*0.7, this->UPPER_HEAD_HEIGHT*0.45, -this->UPPER_HEAD_WIDTH*0.40);
+	//glColor3f(0.0f, 0.0f, 0.0f);
+	//Utils::drawSphere(this->EYE_RADIUS, this->SLICES, this->STACKS, this->m_faceType);
+	//glPopMatrix();
+	//glPushMatrix();
+	//glTranslatef(this->UPPER_HEAD_LENGTH*0.7, this->UPPER_HEAD_HEIGHT*0.45, this->UPPER_HEAD_WIDTH*0.40);
+	//glColor3f(0.0f, 0.0f, 0.0f);
+	//Utils::drawSphere(this->EYE_RADIUS, this->SLICES, this->STACKS, this->m_faceType);
+	//glPopMatrix();
+	
+	
 	glPopMatrix();
 }
 
 void Dog::drawTail() {
 	glPushMatrix();
 	glTranslatef(-this->BODY_LENGTH / 2.0f - this->TAIL_LENGTH / 2.0f, 0.0f, 0.0f);
-	glColor3f(0.5f, 0.35f, 0.05f);
+	
+	
+	glColor3fv(Color::Tail);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Tail);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Tail);
+
+
+
 	Utils::drawCube(this->TAIL_LENGTH, this->TAIL_HEIGHT, this->TAIL_WIDTH, this->m_faceType);
 	glPopMatrix();
 }
@@ -157,7 +172,11 @@ void Dog::drawAllLegs() {
 	};
 	for (int i = 0; i < 4; i++) {
 		glPushMatrix();
-		glColor3f(0.5f, 0.35f, 0.5f);
+
+		glColor3fv(Color::Leg);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Leg);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Leg);
+
 		glTranslatef(v[i][0] * LEG_X, v[i][1] * LEG_Y, v[i][2] * LEG_Z);
 		legs[i].FEET_ANGLE = -legs[i].LOWER_ANGLE - legs[i].UPPER_ANGLE;
 		legs[i].drawLeg();

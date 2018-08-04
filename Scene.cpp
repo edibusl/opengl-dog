@@ -46,7 +46,6 @@ Scene::Scene(int argc, char** argv)
 	m_dog->y_pos = m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f;
 
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
-
 	m_lamp = new Lamp();
 
 	::g_CurrentInstance = this;
@@ -76,29 +75,6 @@ void Scene::init() {
 	//Enable depth testing when rendering objects
 	glEnable(GL_DEPTH_TEST);
 	
-
-	glMatrixMode(GL_MODELVIEW);
-	static float ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-	static float diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	static float position[] = { 60, 60, 60, 1.0 };
-	static float lmodel_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat lightDirection[] = { 0, 0, 0 };
-
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 10.0);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightDirection);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-	glEnable(GL_AUTO_NORMAL);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-}
-
-void Scene::draw() {
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	//Set perspective
 	glMatrixMode(GL_PROJECTION);
@@ -108,26 +84,81 @@ void Scene::draw() {
 	float aspect = (float)w / h;
 	gluPerspective(Camera::ANGLE, aspect, Camera::Z_NEAR, Camera::Z_FAR);
 
-	//Set camera position
+
+	//Lighting
+	static float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
+	static float diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	m_LightPositionX = 0;
+	m_LightPositionY = 40;
+	m_LightPositionZ = 0;
+	m_bLightDiffuse = true;
+	m_bLightSpecular = true;
+
+	//General lighting settings
+	glEnable(GL_LIGHTING);
+	//glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	glShadeModel(GL_SMOOTH); //Gourad
+
+	//Global ambient
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
+
+	//Set diffuse and specular light
+	glLightfv(GL_LIGHT0, GL_AMBIENT, Color::Black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, Color::Black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);	
+	glLightfv(GL_LIGHT1, GL_AMBIENT, Color::Black);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, Color::Black);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);	
+}
+
+void Scene::draw() {
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	//Set camera position
 	Camera::lookAt();
 
+	//Light enabling and position
+	if (m_bLightDiffuse) {
+		glEnable(GL_LIGHT0);
+		GLfloat lightPosition0[] = { 20, 40, 0, 1.0 };
+		glLightfv(GL_LIGHT0, GL_POSITION, lightPosition0);
+	
+		glEnable(GL_LIGHT1);
+		GLfloat lightPosition1[] = { -20, 40, 0, 1.0 };
+		glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+	} else {
+		glDisable(GL_LIGHT0);
+		glDisable(GL_LIGHT1);
+	}
+	m_lamp->setLighting(m_bLightSpecular);
+
+	
 	//Draw room
 	glPushMatrix();
 	glTranslatef(-Scene::ROOM_WIDTH / 2, 0, -Scene::ROOM_WIDTH / 2);
 	m_room->draw();
 	glPopMatrix();
 
-	//Draw lamp and set lighting
+	//Draw lamp
 	m_lamp->draw(0, Scene::ROOM_HEIGHT, 0);
-	//m_lamp->setLighting();
+	
 
 	//Draw dog
 	m_dog->draw();
 
 	//Draw debugging coordinates
 	this->drawCoordinateArrows();
+
+	
+	//Debugging - Draw an item for position checking
+	//glPushMatrix();
+	//glTranslatef(m_LightPositionX, m_LightPositionY, m_LightPositionZ);
+	////Utils::drawSphere(1, 5, 5, FaceType::SOLID);
+	//Utils::drawCube(1, 1, 1, FaceType::SOLID);
+	//glPopMatrix();
 
 
 
@@ -160,7 +191,7 @@ void Scene::drawCoordinateArrows() {
 	Utils::drawText(0.0, 0.0, 12.0, "z");
 }
 
-void Scene::reshape(int width, int height) {							/*Preventing distortion due to rescaling*/
+void Scene::reshape(int width, int height) {
 	AppWindow::WIDTH = width;
 	AppWindow::HEIGHT = height;
 	AppWindow::ASPECT = (float)AppWindow::WIDTH / AppWindow::HEIGHT;
@@ -188,6 +219,23 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 			m_curKeysControl = KeysControl::LAMP_DIRECTION;
 			break;
 		}
+		case 'k':
+		{
+			m_curKeysControl = KeysControl::LIGHT_DIRECTION;
+			break;
+		}
+		case 'd':
+		{
+			m_bLightDiffuse = !m_bLightDiffuse;
+			this->draw();
+			break;
+		}
+		case 's':
+		{
+			m_bLightSpecular = !m_bLightSpecular;
+			this->draw();
+			break;
+		}
 	}
 }
 
@@ -202,6 +250,9 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 			break;
 		case KeysControl::LAMP_DIRECTION:
 			this->handleLampDirection(key);
+			break;
+		case KeysControl::LIGHT_DIRECTION:
+			this->handleLightPosition(key);
 			break;
 	}
 }
@@ -338,4 +389,58 @@ void Scene::handleLampDirection(unsigned char key)
 		break;
 	}
 	}
+}
+
+void Scene::handleLightPosition(unsigned char key)
+{
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+	{
+		lightRotatePosition(1, 0, 0);
+		this->draw();
+
+		break;
+	}
+	case GLUT_KEY_LEFT:
+	{
+		lightRotatePosition(-1, 0, 0);
+		this->draw();
+
+		break;
+	}
+	case GLUT_KEY_UP:
+	{
+		lightRotatePosition(0, 1, 0);
+		this->draw();
+
+		break;
+	}
+	case GLUT_KEY_DOWN:
+	{
+		lightRotatePosition(0, -1, 0);
+		this->draw();
+
+		break;
+	}
+	case GLUT_KEY_PAGE_UP:
+	{
+		lightRotatePosition(0, 0, -1);
+		this->draw();
+
+		break;
+	}
+	case GLUT_KEY_PAGE_DOWN:
+	{
+		lightRotatePosition(0, 0, 1);
+		this->draw();
+
+		break;
+	}
+	}
+}
+
+void Scene::lightRotatePosition(int x, int y, int z) {
+	m_LightPositionX += 2 * x;
+	m_LightPositionY += 2 * y;
+	m_LightPositionZ += 2 * z;
 }

@@ -30,7 +30,6 @@ void Room::draw() {
 	//Back wall
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, this->m_textureWall);
-	glColor3fv(Color::White);
 	this->drawWall();
 
 
@@ -72,6 +71,12 @@ void Room::drawWall()
 {
 	glBegin(GL_POLYGON);
 
+	glColor3fv(Color::White);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::White);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Yellow);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Purple);
+	glNormal3f(1, 0, 0);
+
 	glTexCoord2f(0.0, 0.0);
 	glVertex3f(0, 0, 0);
 
@@ -91,42 +96,33 @@ void Room::drawHorizontalWall()
 {
 	glBegin(GL_POLYGON);
 
-	GLfloat surfEmissionColor[] = { 0.8, 0.8, 0.8, 1.0 };
 	
+	glColor3fv(Color::White);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::White);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Yellow);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Purple);
+	glMaterialf(GL_FRONT, GL_SHININESS, 120.0);
 
-	//Reflection
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(0.7, 0.0, 0.0, 0.40);  /* 40% dark red floor color */
-	
-	
-
-
-	//glPushAttrib(GL_ALL_ATTRIB_BITS);
-	//glColor3fv(Color::White);
-	//static float all_colors[] = { 0.6, 0.6, 0.6, 1.0 };
-	static float specular_color[] = { 0, 0, 0, 1.0 };
-	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, all_colors);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_color);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 120.0);
 	glNormal3f(0, 1, 0);
-
-	
-
 	glTexCoord2f(0.0, 0.0);
 	glVertex3f(0, 0, 0);
 
+	glNormal3f(0, 1, 0);
 	glTexCoord2f(0.0, 1.0);
 	glVertex3f(this->m_width, 0, 0);
 
+	glNormal3f(0, 1, 0);
 	glTexCoord2f(1.0, 1.0);
 	glVertex3f(this->m_width, 0, this->m_width);
 
+	glNormal3f(0, 1, 0);
 	glTexCoord2f(1.0, 0.0);
 	glVertex3f(0, 0, this->m_width);
 
-	glDisable(GL_BLEND);
-	glDisable(GL_COLOR_MATERIAL);
+	//glDisable(GL_BLEND);
+	//glDisable(GL_COLOR_MATERIAL);
+
+
 	glPopAttrib();
 
 	glEnd();
