@@ -43,7 +43,37 @@ Scene::Scene(int argc, char** argv)
 	AppWindow::init();
 
 	glutInit(&argc, argv);
-	init();
+	
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
+	AppWindow::WIDTH = glutGet(GLUT_SCREEN_WIDTH);
+	AppWindow::HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
+	AppWindow::ASPECT = (float)AppWindow::WIDTH / AppWindow::HEIGHT;
+	glutInitWindowSize(AppWindow::WIDTH, AppWindow::HEIGHT);
+	AppWindow::TOP = 0;
+	AppWindow::LEFT = 0;
+	AppWindow::WORLD_FRONT_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_NEAR);
+	AppWindow::WORLD_FRONT_WIDTH = AppWindow::WORLD_FRONT_HEIGHT*AppWindow::ASPECT;
+	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_FAR);
+	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT*AppWindow::ASPECT;
+	glutInitWindowPosition(AppWindow::TOP, AppWindow::LEFT);
+	glutCreateWindow(WINDOW_TITLE.c_str());
+
+	//Enable depth testing when rendering objects
+	glEnable(GL_DEPTH_TEST);
+
+	//Set perspective
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+	float aspect = (float)w / h;
+	gluPerspective(Camera::ANGLE, aspect, Camera::Z_NEAR, Camera::Z_FAR);
+
+	//Coordinate system arrows
+	m_bShowCoordinateArrows = false;
+
+	//Dog eye view
+	m_bDogEyesView = false;
 
 	m_dog = new Dog(Scene::DOG_SIZE);
 	
@@ -66,66 +96,6 @@ Scene::Scene(int argc, char** argv)
 }
 
 
-void Scene::init() {
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-	AppWindow::WIDTH = glutGet(GLUT_SCREEN_WIDTH);
-	AppWindow::HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
-	AppWindow::ASPECT = (float)AppWindow::WIDTH / AppWindow::HEIGHT;
-	glutInitWindowSize(AppWindow::WIDTH, AppWindow::HEIGHT);
-	AppWindow::TOP = 0;
-	AppWindow::LEFT = 0;
-	AppWindow::WORLD_FRONT_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_NEAR);
-	AppWindow::WORLD_FRONT_WIDTH = AppWindow::WORLD_FRONT_HEIGHT*AppWindow::ASPECT;
-	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_FAR);
-	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT*AppWindow::ASPECT;
-	glutInitWindowPosition(AppWindow::TOP, AppWindow::LEFT);
-	glutCreateWindow(WINDOW_TITLE.c_str());
-
-	//Enable depth testing when rendering objects
-	glEnable(GL_DEPTH_TEST);
-	
-	
-	//Set perspective
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	int w = glutGet(GLUT_WINDOW_WIDTH);
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	float aspect = (float)w / h;
-	gluPerspective(Camera::ANGLE, aspect, Camera::Z_NEAR, Camera::Z_FAR);
-
-
-	//Coordinate system arrows
-	m_bShowCoordinateArrows = false;
-
-	//Dog eye view
-	m_bDogEyesView = false;
-
-	//Lighting
-	static float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
-	static float diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	m_LightPositionX = 0;
-	m_LightPositionY = 40;
-	m_LightPositionZ = 0;
-	m_bLightDiffuse = true;
-	m_bLightSpecular = true;
-
-	//General lighting settings
-	glEnable(GL_LIGHTING);
-	//glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-	glShadeModel(GL_SMOOTH); //Gourad
-
-	//Global ambient
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
-
-	//Set diffuse and specular light
-	glLightfv(GL_LIGHT0, GL_AMBIENT, Color::Black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, Color::Black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);	
-	glLightfv(GL_LIGHT1, GL_AMBIENT, Color::Black);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, Color::Black);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);	
-}
-
 void Scene::draw() {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -146,19 +116,9 @@ void Scene::draw() {
 	//Save the view matrix to be used later for eye position calculation
 	m_dog->saveViewMatrix();
 
-	//Light enabling and position
-	if (m_bLightDiffuse) {
-		glEnable(GL_LIGHT0);
-		GLfloat lightPosition0[] = { 20, 40, 0, 1.0 };
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPosition0);
-	
-		glEnable(GL_LIGHT1);
-		GLfloat lightPosition1[] = { -20, 40, 0, 1.0 };
-		glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
-	} else {
-		glDisable(GL_LIGHT0);
-		glDisable(GL_LIGHT1);
-	}
+
+	//Lighting
+	this->initLight();
 	m_lamp->setLighting(m_bLightSpecular);
 
 	
@@ -186,14 +146,31 @@ void Scene::draw() {
 	//Draw text with instructions for controlling
 	this->drawKeysControlText();
 	
-	//Debugging - Draw an item for position checking
-	//glPushMatrix();
-	//glTranslatef(40, 18, 11);
-	//////Utils::drawSphere(1, 5, 5, FaceType::SOLID);
-	//Utils::drawCube(1, 1, 1, FaceType::SOLID);
-	//glPopMatrix();
-	
 	glutSwapBuffers();
+}
+
+void Scene::initLight()
+{
+	static float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
+	static float white[] = { 1.0, 1.0, 1.0, 1.0 };
+	static float specular[] = { 0, 0, 0, 1.0 };
+	m_LightPositionX = 0;
+	m_LightPositionY = 40;
+	m_LightPositionZ = 0;
+	m_bLightDiffuse = true;
+	m_bLightSpecular = true;
+
+	//General lighting settings
+	glEnable(GL_LIGHTING);
+	glShadeModel(GL_SMOOTH); //Gourad
+
+	//Global ambient
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
+
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, Color::Yellow);
 }
 
 void Scene::drawCoordinateArrows() {
@@ -359,6 +336,16 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 			this->draw();
 			break;
 		}
+		case 'n':
+		{
+			m_curKeysControl = KeysControl::SPOTLIGHT_POSITION;
+			break;
+		}
+		case 'm':
+		{
+			m_curKeysControl = KeysControl::SPOTLIGHT_DIRECTION;
+			break;
+		}
 	}
 }
 
@@ -382,6 +369,12 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 			break;
 		case KeysControl::MOVE_HEAD:
 			this->handleMoveHead(key);
+			break;
+		case KeysControl::SPOTLIGHT_POSITION:
+			this->handleSpotlightPosition(key);
+			break;
+		case KeysControl::SPOTLIGHT_DIRECTION:
+			this->handleSpotlightDirection(key);
 			break;
 	}
 }
@@ -567,6 +560,83 @@ void Scene::handleLightPosition(unsigned char key)
 	}
 	}
 }
+
+void Scene::handleSpotlightPosition(unsigned char key)
+{
+	switch (key) {
+		case GLUT_KEY_RIGHT:
+		{
+			m_lamp->setLightPosition(1, 0, 0);
+			break;
+		}
+		case GLUT_KEY_LEFT:
+		{
+			m_lamp->setLightPosition(-1, 0, 0);
+			break;
+		}
+		case GLUT_KEY_UP:
+		{
+			m_lamp->setLightPosition(0, 1, 0);
+			break;
+		}
+		case GLUT_KEY_DOWN:
+		{
+			m_lamp->setLightPosition(0, -1, 0);
+			break;
+		}
+		case GLUT_KEY_PAGE_UP:
+		{
+			m_lamp->setLightPosition(0, 0, -1);
+			break;
+		}
+		case GLUT_KEY_PAGE_DOWN:
+		{
+			m_lamp->setLightPosition(0, 0, 1);
+			break;
+		}
+	}
+
+	this->draw();
+}
+
+void Scene::handleSpotlightDirection(unsigned char key)
+{
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+	{
+		m_lamp->setLightDirection(1, 0, 0);
+		break;
+	}
+	case GLUT_KEY_LEFT:
+	{
+		m_lamp->setLightDirection(-1, 0, 0);
+		break;
+	}
+	case GLUT_KEY_UP:
+	{
+		m_lamp->setLightDirection(0, 1, 0);
+		break;
+	}
+	case GLUT_KEY_DOWN:
+	{
+		m_lamp->setLightDirection(0, -1, 0);
+		break;
+	}
+	case GLUT_KEY_PAGE_UP:
+	{
+		m_lamp->setLightDirection(0, 0, -1);
+		break;
+	}
+	case GLUT_KEY_PAGE_DOWN:
+	{
+		m_lamp->setLightDirection(0, 0, 1);
+		break;
+	}
+	}
+
+	this->draw();
+}
+
 
 void Scene::handleMoveTail(unsigned char key)
 {

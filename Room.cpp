@@ -91,14 +91,13 @@ void Room::drawWall()
 
 void Room::drawHorizontalWall()
 {
-	glBegin(GL_POLYGON);
-
-	
 	glColor3fv(Color::White);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::White);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Yellow);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Purple);
-	glMaterialf(GL_FRONT, GL_SHININESS, 120.0);
+	glMaterialf(GL_FRONT, GL_SHININESS, 60.0);
+
+	glBegin(GL_POLYGON);
 
 	glNormal3f(0, 1, 0);
 	glTexCoord2f(0.0, 0.0);
@@ -115,12 +114,6 @@ void Room::drawHorizontalWall()
 	glNormal3f(0, 1, 0);
 	glTexCoord2f(1.0, 0.0);
 	glVertex3f(0, 0, this->m_width);
-
-	//glDisable(GL_BLEND);
-	//glDisable(GL_COLOR_MATERIAL);
-
-
-	glPopAttrib();
 
 	glEnd();
 }

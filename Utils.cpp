@@ -444,3 +444,11 @@ bool Utils::gluInvertMatrix(const float m[16], float invOut[16])
 
 	return true;
 }
+
+void Utils::debugDrawSomething(float x, float y, float z, int size)
+{
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	Utils::drawCube(size, size, size, FaceType::SOLID);
+	glPopMatrix();
+}

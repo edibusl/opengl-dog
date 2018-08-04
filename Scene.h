@@ -30,7 +30,9 @@ enum KeysControl {
 	MOVE_TAIL = 6,
 	MOVE_HEAD = 7,
 	SWITCH_COORDINATE_SYSTEM = 8,
-	LAMP_DIRECTION = 20
+	LAMP_DIRECTION = 20,
+	SPOTLIGHT_POSITION = 21,
+	SPOTLIGHT_DIRECTION = 22
 };
 
 class Scene
@@ -71,6 +73,7 @@ public:
 
 private:
 	void initMenu();
+	void initLight();
 	void drawKeysControlText();
 	void handleCameraLookAt(unsigned char key);
 	void handleCameraPosition(unsigned char key);
@@ -78,6 +81,8 @@ private:
 	void handleLightPosition(unsigned char key);
 	void handleMoveTail(unsigned char key);
 	void handleMoveHead(unsigned char key);
+	void handleSpotlightPosition(unsigned char key);
+	void handleSpotlightDirection(unsigned char key);
 	void lightRotatePosition(int x, int y, int z);
 };
 

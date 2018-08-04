@@ -54,6 +54,7 @@ void Furniture::draw() {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::TeapotAmbient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TeapotDiffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::TeapotSpecular);
+	glMaterialf(GL_FRONT, GL_SHININESS, 0.2 * 128);
 
 	glPushMatrix();
 	glTranslatef(TableSurfaceSize / 2, (TableLegSizeY / 2) + TableSurfaceThickness, TableSurfaceSize / 2);

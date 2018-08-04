@@ -93,7 +93,7 @@ void Dog::drawTorso() {
 	glColor3fv(Color::Torso);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Torso);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TorsoDiffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::White);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Black);
 
 	Utils::drawEllipsoid(BODY_LENGTH * 0.7, BODY_HEIGHT * 0.8, BODY_WIDTH, 10, 10);
 	glPopMatrix();
@@ -124,6 +124,7 @@ void Dog::drawFace() {
 	glColor3fv(Color::Head);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Head);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Head);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Black);
 	Utils::drawSphere(HEAD_RADIUS, this->SLICES, this->STACKS, FaceType::SOLID);
 
 	//Ears

@@ -1,20 +1,24 @@
 #include "Lamp.h"
 
-const int Lamp::CABLE_LENGTH = 30;
+const int Lamp::CABLE_LENGTH = 60;
 
 Lamp::Lamp()
 {
 	m_angleX = 0;
 	m_angleY = 0;
 	m_angleZ = 0;
+
+	m_positionX = 50;
+	m_positionY = 120;
+	m_positionZ = 20;
+
+	m_directionX = 25;
+	m_directionY = 15;
+	m_directionZ = -40;
 }
 
 void Lamp::draw(int x, int y, int z)
 {
-	m_positionX = x;
-	m_positionY = y;
-	m_positionZ = z;
-
 	//Translate whole lamp's position
 	glPushMatrix();
 	glTranslatef(x, y, z);
@@ -27,7 +31,12 @@ void Lamp::draw(int x, int y, int z)
 
 	//Lamp's cable
 	glPushMatrix();
+
 	glColor3fv(Color::Black);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Black);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Black);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Black);
+
 	glRotatef(90, 1, 0, 0);
 	Utils::drawCylinder(0.5, CABLE_LENGTH);
 	glPopMatrix();
@@ -35,13 +44,24 @@ void Lamp::draw(int x, int y, int z)
 	//Round lamp
 	glPushMatrix();
 	glTranslatef(0, -CABLE_LENGTH - 3, 0);
+	
 	glColor3fv(Color::Yellow);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Yellow);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Yellow);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Yellow);
+
+
 	Utils::drawSphere(4, 32, 32, FaceType::SOLID);
 	glPopMatrix();
 
 	//Draw the lamp's base cone
 	glPushMatrix();
-	glColor3fv(Color::Black);
+
+	glColor3fv(Color::DarkBlue);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::DarkBlue);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::DarkBlue);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::DarkBlue);
+
 	glTranslatef(0, -CABLE_LENGTH + 9, 0);
 	glRotatef(90, 1, 0, 0);
 	Utils::drawCone(6, 13);
@@ -62,22 +82,38 @@ void Lamp::setLighting(boolean enabled)
 		return;
 	}
 
-	GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat lightPosition[] = { m_positionX, m_positionY - 15, m_positionZ, 1 };
-	GLfloat lightDirection[] = { 10, 10, 10, 1 };
+	glEnable(GL_LIGHT1);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 20.0); //30 degress cutoff angle
 
-	glEnable(GL_LIGHT2);
-	glLightfv(GL_LIGHT2, GL_AMBIENT, Color::Black);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, Color::White);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-	glLightfv(GL_LIGHT2, GL_POSITION, lightPosition);
-	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 10.0); //30 degress cutoff angle
-	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.5); //attenuation
-	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightDirection);
+	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+	glLightfv(GL_LIGHT1, GL_AMBIENT, white);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+	
+	GLfloat lightPosition[] = { m_positionX, m_positionY - CABLE_LENGTH - 10, m_positionZ, 1 };
+	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+	Utils::debugDrawSomething(lightPosition[0], lightPosition[1], lightPosition[2], 1);
+
+	//The spotlight points down
+	GLfloat unit[] = { 0, -1, 0, 1 };
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, unit);
 }
 
 void Lamp::rotate(int x, int y, int z) {
 	m_angleX += x;
 	m_angleY += y;
 	m_angleZ += z;
+}
+
+void Lamp::setLightPosition(int x, int y, int z)
+{
+	m_positionX += x;
+	m_positionY += y;
+	m_positionZ += z;
+}
+
+void Lamp::setLightDirection(int x, int y, int z)
+{
+	m_directionX += x;
+	m_directionY += y;
+	m_directionZ += z;
 }

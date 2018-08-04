@@ -15,6 +15,7 @@ public:
 	static const GLfloat Purple[];
 	static const GLfloat Grey[];
 	static const GLfloat Brown[];
+	static const GLfloat DarkBlue[];
 	
 	static const GLfloat Leg[];
 	static const GLfloat Tail[];
