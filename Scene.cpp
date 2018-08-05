@@ -122,7 +122,6 @@ void Scene::draw() {
 
 	//Lighting
 	this->initLight();
-	m_lamp->setLighting();
 	
 	//Draw room
 	glPushMatrix();
@@ -130,8 +129,9 @@ void Scene::draw() {
 	m_room->draw();
 	glPopMatrix();
 
-	//Draw lamp
+	//Draw lamp and set its light
 	m_lamp->draw(m_lightPositionX, m_lightPositionY, m_lightPositionZ);
+	m_lamp->setLighting();
 
 	//Draw dog
 	m_dog->draw();
@@ -530,38 +530,22 @@ void Scene::handleSpotlightDirection(unsigned char key)
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 	{
-		m_lamp->setLightDirection(1, 0, 0);
-		m_lamp->rotate(1, 0, 0);
+		m_lamp->setLightDirection(1, 0);
 		break;
 	}
 	case GLUT_KEY_LEFT:
 	{
-		m_lamp->setLightDirection(-1, 0, 0);
-		m_lamp->rotate(-1, 0, 0);
-		break;
-	}
-	case GLUT_KEY_UP:
-	{
-		m_lamp->setLightDirection(0, 1, 0);
-		m_lamp->rotate(0, 1, 0);
-		break;
-	}
-	case GLUT_KEY_DOWN:
-	{
-		m_lamp->setLightDirection(0, -1, 0);
-		m_lamp->rotate(0, -1, 0);
+		m_lamp->setLightDirection(-1, 0);
 		break;
 	}
 	case GLUT_KEY_PAGE_UP:
 	{
-		m_lamp->setLightDirection(0, 0, -1);
-		m_lamp->rotate(0, 0, -1);
+		m_lamp->setLightDirection(0, 0);
 		break;
 	}
 	case GLUT_KEY_PAGE_DOWN:
 	{
-		m_lamp->setLightDirection(0, 0, 1);
-		m_lamp->rotate(0, 0, 1);
+		m_lamp->setLightDirection(0, 0);
 		break;
 	}
 	}

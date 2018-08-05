@@ -18,7 +18,6 @@ private:
 	int m_positionY;
 	int m_positionZ;
 	int m_directionX;
-	int m_directionY;
 	int m_directionZ;
 	int m_angleX;
 	int m_angleY;
@@ -29,7 +28,6 @@ public:
 	Lamp();
 	void draw(int x, int y, int z);
 	void setLighting();
-	void rotate(int x, int y, int z);
-	void setLightDirection(int x, int y, int z);
+	void setLightDirection(int x, int z);
 	void setIntensity(float diff);
 };

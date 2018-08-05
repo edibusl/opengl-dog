@@ -6,12 +6,8 @@ Lamp::Lamp()
 {
 	m_intensity = 0;
 
-	m_angleX = 0;
-	m_angleY = 0;
-	m_angleZ = 0;
-
+	//Initial spotlight direction - direct to the dog's body
 	m_directionX = 25;
-	m_directionY = 15;
 	m_directionZ = -40;
 }
 
@@ -24,12 +20,6 @@ void Lamp::draw(int x, int y, int z)
 	//Translate whole lamp's position
 	glPushMatrix();
 	glTranslatef(m_positionX, m_positionY, m_positionZ);
-
-	//Rotate whole lamp according to angle
-	glPushMatrix();
-	glRotatef(m_angleX, 1, 0, 0);
-	glRotatef(m_angleY, 0, 1, 0);
-	glRotatef(m_angleZ, 0, 0, 1);
 
 	//Lamp's cable
 	glPushMatrix();
@@ -71,9 +61,6 @@ void Lamp::draw(int x, int y, int z)
 
 	//Remove lamp position translation
 	glPopMatrix();
-
-	//Remove lamp angle rotation
-	glPopMatrix();
 }
 
 void Lamp::setLighting()
@@ -86,8 +73,9 @@ void Lamp::setLighting()
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
 
 	//Direction - the spotlight points down
-	GLfloat unit[] = { 0, -1, 0, 1 };
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, unit);
+	GLfloat directionPoint[] = { m_directionX, 0, m_directionZ, 1 };
+	GLfloat directionVector[] = { directionPoint[0] - m_positionX, directionPoint[1] - m_positionY, directionPoint[2] - m_positionZ, 1 };
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, directionVector);
 
 	//Intensity (diffuse / specular)
 	this->setIntensity(0);
@@ -111,15 +99,8 @@ void Lamp::setIntensity(float diff)
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, intensity);
 }
 
-void Lamp::rotate(int x, int y, int z) {
-	m_angleX += x;
-	m_angleY += y;
-	m_angleZ += z;
-}
-
-void Lamp::setLightDirection(int x, int y, int z)
+void Lamp::setLightDirection(int x, int z)
 {
 	m_directionX += x;
-	m_directionY += y;
 	m_directionZ += z;
 }
