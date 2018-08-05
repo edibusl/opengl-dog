@@ -256,6 +256,7 @@ void Scene::initMenu() {
 	glutAddSubMenu("Dog", dog);
 	glutAddSubMenu("Debugging", debug);
 	glutAddMenuEntry("Stop controlling", KeysControl::NONE);
+	glutAddMenuEntry("Quit", KeysControl::EXIT);
 
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -274,7 +275,10 @@ void Scene::onMenuClick(int value) {
 			m_bDogEyesView = !m_bDogEyesView;
 			break;
 		}
-
+		case KeysControl::EXIT:
+		{
+			exit(0);
+		}
 	}
 
 	glutPostRedisplay();
