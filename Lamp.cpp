@@ -4,13 +4,11 @@ const int Lamp::CABLE_LENGTH = 60;
 
 Lamp::Lamp()
 {
+	m_intensity = 0;
+
 	m_angleX = 0;
 	m_angleY = 0;
 	m_angleZ = 0;
-
-	m_positionX = 50;
-	m_positionY = 120;
-	m_positionZ = 20;
 
 	m_directionX = 25;
 	m_directionY = 15;
@@ -19,9 +17,13 @@ Lamp::Lamp()
 
 void Lamp::draw(int x, int y, int z)
 {
+	m_positionX = x;
+	m_positionY = y;
+	m_positionZ = z;
+
 	//Translate whole lamp's position
 	glPushMatrix();
-	glTranslatef(x, y, z);
+	glTranslatef(m_positionX, m_positionY, m_positionZ);
 
 	//Rotate whole lamp according to angle
 	glPushMatrix();
@@ -74,41 +76,45 @@ void Lamp::draw(int x, int y, int z)
 	glPopMatrix();
 }
 
-void Lamp::setLighting(boolean enabled)
+void Lamp::setLighting()
 {
-	if (!enabled) {
-		glDisable(GL_LIGHT2);
-
-		return;
-	}
-
 	glEnable(GL_LIGHT1);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 20.0); //30 degress cutoff angle
 
-	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	glLightfv(GL_LIGHT1, GL_AMBIENT, white);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
-	
+	//Position
 	GLfloat lightPosition[] = { m_positionX, m_positionY - CABLE_LENGTH - 10, m_positionZ, 1 };
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-	Utils::debugDrawSomething(lightPosition[0], lightPosition[1], lightPosition[2], 1);
 
-	//The spotlight points down
+	//Direction - the spotlight points down
 	GLfloat unit[] = { 0, -1, 0, 1 };
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, unit);
+
+	//Intensity (diffuse / specular)
+	this->setIntensity(0);
+}
+
+void Lamp::setIntensity(float diff)
+{
+	m_intensity += diff;
+	if (m_intensity > 1)
+	{
+		m_intensity = 1;
+	}
+	else if (m_intensity < -1)
+	{
+		m_intensity = -1;
+	}
+
+	float intensity[] = { 1.0 + m_intensity, 1.0 + m_intensity, 1.0 + m_intensity, 1 };
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, intensity);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, intensity);
 }
 
 void Lamp::rotate(int x, int y, int z) {
 	m_angleX += x;
 	m_angleY += y;
 	m_angleZ += z;
-}
-
-void Lamp::setLightPosition(int x, int y, int z)
-{
-	m_positionX += x;
-	m_positionY += y;
-	m_positionZ += z;
 }
 
 void Lamp::setLightDirection(int x, int y, int z)

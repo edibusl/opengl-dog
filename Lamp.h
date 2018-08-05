@@ -22,13 +22,14 @@ private:
 	int m_directionZ;
 	int m_angleX;
 	int m_angleY;
-	int m_angleZ;	
+	int m_angleZ;
+	float m_intensity;
 
 public:
 	Lamp();
 	void draw(int x, int y, int z);
-	void setLighting(boolean enabled);
+	void setLighting();
 	void rotate(int x, int y, int z);
-	void setLightPosition(int x, int y, int z);
 	void setLightDirection(int x, int y, int z);
+	void setIntensity(float diff);
 };

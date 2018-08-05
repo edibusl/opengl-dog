@@ -25,14 +25,13 @@ enum KeysControl {
 	CAMERA_POSITION = 1,
 	CAMERA_LOOKAT = 2,	
 	CAMERA_DOGVIEW = 3,
-	LIGHT_DIRECTION = 4,
-	LIGHT_GLOBAL_INTENSITY = 5,
-	MOVE_TAIL = 6,
-	MOVE_HEAD = 7,
-	SWITCH_COORDINATE_SYSTEM = 8,
-	LAMP_DIRECTION = 20,
-	SPOTLIGHT_POSITION = 21,
-	SPOTLIGHT_DIRECTION = 22
+	SPOTLIGHT_POSITION = 4,
+	SPOTLIGHT_DIRECTION = 5,
+	SPOTLIGHT_INTENSITY = 6,
+	LIGHT_GLOBAL_INTENSITY = 7,
+	MOVE_TAIL = 8,
+	MOVE_HEAD = 9,
+	SWITCH_COORDINATE_SYSTEM = 10
 };
 
 class Scene
@@ -50,14 +49,14 @@ private:
 
 	KeysControl m_curKeysControl;
 
-	int m_LightPositionX;
-	int m_LightPositionY;
-	int m_LightPositionZ;
 	float m_lightGlobalIntensity;
 	bool m_bLightDiffuse;
 	bool m_bLightSpecular;
 	bool m_bShowCoordinateArrows;
 	bool m_bDogEyesView;
+	int m_lightPositionX;
+	int m_lightPositionY;
+	int m_lightPositionZ;
 
 public:
 	Scene(int argc, char** argv);
@@ -78,14 +77,14 @@ private:
 	void drawKeysControlText();
 	void handleCameraLookAt(unsigned char key);
 	void handleCameraPosition(unsigned char key);
-	void handleLampDirection(unsigned char key);
-	void handleLightPosition(unsigned char key);
 	void handleMoveTail(unsigned char key);
 	void handleMoveHead(unsigned char key);
 	void handleSpotlightPosition(unsigned char key);
 	void handleSpotlightDirection(unsigned char key);
-	void lightRotatePosition(int x, int y, int z);
 	void handleLightGlobalIntensity(unsigned char key);
+	void handleSpotlightIntensity(unsigned char key);
+
 	void setLightGlobalIntensity(float diff);
+	void setLampPosition(int x, int y, int z);
 };
 

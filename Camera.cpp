@@ -33,10 +33,10 @@ void Camera::init() {
 	Camera::Z_NEAR = 5.0;
 	Camera::Z_FAR = 205.0;
 	Camera::EYE_X = 50;
-	Camera::EYE_Y = 20;
+	Camera::EYE_Y = 30;
 	Camera::EYE_Z = 40;
 	Camera::LOOK_AT_X = 0;
-	Camera::LOOK_AT_Y = 0;
+	Camera::LOOK_AT_Y = 20;
 	Camera::LOOK_AT_Z = 0;
 	Camera::VUP_X = 0;
 	Camera::VUP_Y = 1;

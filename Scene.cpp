@@ -83,6 +83,10 @@ Scene::Scene(int argc, char** argv)
 
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
 	m_lamp = new Lamp();
+	m_lightPositionX = 0;
+	m_lightPositionY = Scene::ROOM_HEIGHT;
+	m_lightPositionZ = -20;
+
 	m_furniture = new Furniture(25, 0, -40);
 
 	::g_CurrentInstance = this;
@@ -118,7 +122,7 @@ void Scene::draw() {
 
 	//Lighting
 	this->initLight();
-	m_lamp->setLighting(m_bLightSpecular);
+	m_lamp->setLighting();
 	
 	//Draw room
 	glPushMatrix();
@@ -127,8 +131,8 @@ void Scene::draw() {
 	glPopMatrix();
 
 	//Draw lamp
-	m_lamp->draw(50, Scene::ROOM_HEIGHT, 20);
-	
+	m_lamp->draw(m_lightPositionX, m_lightPositionY, m_lightPositionZ);
+
 	//Draw dog
 	m_dog->draw();
 
@@ -152,11 +156,6 @@ void Scene::initLight()
 	float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
 	float white[] = { 1.0, 1.0, 1.0, 1.0 };
 	float specular[] = { 0, 0, 0, 1.0 };
-	m_LightPositionX = 0;
-	m_LightPositionY = 40;
-	m_LightPositionZ = 0;
-	m_bLightDiffuse = true;
-	m_bLightSpecular = true;
 
 	//General lighting settings
 	glEnable(GL_LIGHTING);
@@ -234,7 +233,9 @@ void Scene::initMenu() {
 	}
 
 	int light = glutCreateMenu(::menuCallback);
-	glutAddMenuEntry("Control lamp direction", KeysControl::LIGHT_DIRECTION);
+	glutAddMenuEntry("Control lamp (spotlight) position", KeysControl::SPOTLIGHT_POSITION);
+	glutAddMenuEntry("Control lamp (spotlight) direction", KeysControl::SPOTLIGHT_DIRECTION);
+	glutAddMenuEntry("Change lamp (spotlight) intensity", KeysControl::SPOTLIGHT_INTENSITY);
 	glutAddMenuEntry("Change global light intensity", KeysControl::LIGHT_GLOBAL_INTENSITY);
 
 	int dog = glutCreateMenu(::menuCallback);
@@ -297,6 +298,14 @@ void Scene::drawKeysControlText() {
 			Utils::drawTextOnScreen("Control camera lookat: ** Use keyboard's left/right keys to control X axis ** Use up/down keys to control Y axis ** Use PageUp/PageDown keys to control Z axis.");
 			break;
 		}
+		case KeysControl::CAMERA_DOGVIEW:
+		{
+			if (m_bDogEyesView) {
+				Utils::drawTextOnScreen("Camera is positioned at dog's eyes");
+			}
+
+			break;
+		}
 		case KeysControl::MOVE_TAIL:
 		{
 			Utils::drawTextOnScreen("Control dog's tail: ** Use keyboard's left/right keys to move tail left and right ** Use up/down keys to move tail up and down.");
@@ -307,17 +316,24 @@ void Scene::drawKeysControlText() {
 			Utils::drawTextOnScreen("Control dog's head: ** Use keyboard's left/right keys to move head left and right ** Use up/down keys to move head up and down.");
 			break;
 		}
+		case KeysControl::SPOTLIGHT_POSITION:
+		{
+			Utils::drawTextOnScreen("Control spotlight position: ** Use keyboard's left/right keys to control X axis ** Use PageUp/PageDown keys to control Z axis.");
+			break;
+		}
+		case KeysControl::SPOTLIGHT_DIRECTION:
+		{
+			Utils::drawTextOnScreen("Control spotlight direction: ** Use keyboard's left/right keys to control X axis ** Use PageUp/PageDown keys to control Z axis.");
+			break;
+		}
+		case KeysControl::SPOTLIGHT_INTENSITY:
+		{
+			Utils::drawTextOnScreen("Control spotlight intensity: ** Use keyboard's +/- keys to control intensity.");
+			break;
+		}
 		case KeysControl::LIGHT_GLOBAL_INTENSITY:
 		{
 			Utils::drawTextOnScreen("Control global light intensity: ** Use keyboard's +/- keys to control intensity.");
-			break;
-		}
-		case KeysControl::CAMERA_DOGVIEW:
-		{
-			if (m_bDogEyesView) {
-				Utils::drawTextOnScreen("Camera is positioned at dog's eyes");
-			}
-
 			break;
 		}
 	}
@@ -333,18 +349,6 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 		case 'e':
 		{
 			m_curKeysControl = KeysControl::CAMERA_LOOKAT;
-			return;
-		}
-		case 'd':
-		{
-			m_bLightDiffuse = !m_bLightDiffuse;
-			this->draw();
-			return;
-		}
-		case 's':
-		{
-			m_bLightSpecular = !m_bLightSpecular;
-			this->draw();
 			return;
 		}
 		case 'n':
@@ -365,6 +369,10 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 			this->handleLightGlobalIntensity(key);
 			this->draw();
 			return;
+		case KeysControl::SPOTLIGHT_INTENSITY:
+			this->handleSpotlightIntensity(key);
+			this->draw();
+			return;
 	}
 }
 
@@ -377,26 +385,17 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 		case KeysControl::CAMERA_POSITION:
 			this->handleCameraPosition(key);
 			break;
-		case KeysControl::LAMP_DIRECTION:
-			this->handleLampDirection(key);
+		case KeysControl::SPOTLIGHT_DIRECTION:
+			this->handleSpotlightDirection(key);
 			break;
-		case KeysControl::LIGHT_DIRECTION:
-			this->handleLightPosition(key);
+		case KeysControl::SPOTLIGHT_POSITION:
+			this->handleSpotlightPosition(key);
 			break;
 		case KeysControl::MOVE_TAIL:
 			this->handleMoveTail(key);
 			break;
 		case KeysControl::MOVE_HEAD:
 			this->handleMoveHead(key);
-			break;
-		case KeysControl::SPOTLIGHT_POSITION:
-			this->handleSpotlightPosition(key);
-			break;
-		case KeysControl::SPOTLIGHT_DIRECTION:
-			this->handleSpotlightDirection(key);
-			break;
-		case KeysControl::LIGHT_GLOBAL_INTENSITY:
-			this->handleLightGlobalIntensity(key);
 			break;
 	}
 }
@@ -493,127 +492,27 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 }
 
-void Scene::handleLampDirection(unsigned char key)
-{
-	switch (key) {
-	case GLUT_KEY_RIGHT:
-	{
-		m_lamp->rotate(1, 0, 0);
-		this->draw();
-		break;
-	}
-	case GLUT_KEY_LEFT:
-	{
-		m_lamp->rotate(-1, 0, 0);
-		this->draw();
-		break;
-	}
-	case GLUT_KEY_UP:
-	{
-		m_lamp->rotate(0, 1, 0);
-		this->draw();
-		break;
-	}
-	case GLUT_KEY_DOWN:
-	{
-		m_lamp->rotate(0, -1, 0);
-		this->draw();
-		break;
-	}
-	case GLUT_KEY_PAGE_UP:
-	{
-		m_lamp->rotate(0, 0, -1);
-		this->draw();
-		break;
-	}
-	case GLUT_KEY_PAGE_DOWN:
-	{
-		m_lamp->rotate(0, 0, 1);
-		this->draw();
-		break;
-	}
-	}
-}
-
-void Scene::handleLightPosition(unsigned char key)
-{
-	switch (key) {
-	case GLUT_KEY_RIGHT:
-	{
-		lightRotatePosition(1, 0, 0);
-		this->draw();
-
-		break;
-	}
-	case GLUT_KEY_LEFT:
-	{
-		lightRotatePosition(-1, 0, 0);
-		this->draw();
-
-		break;
-	}
-	case GLUT_KEY_UP:
-	{
-		lightRotatePosition(0, 1, 0);
-		this->draw();
-
-		break;
-	}
-	case GLUT_KEY_DOWN:
-	{
-		lightRotatePosition(0, -1, 0);
-		this->draw();
-
-		break;
-	}
-	case GLUT_KEY_PAGE_UP:
-	{
-		lightRotatePosition(0, 0, -1);
-		this->draw();
-
-		break;
-	}
-	case GLUT_KEY_PAGE_DOWN:
-	{
-		lightRotatePosition(0, 0, 1);
-		this->draw();
-
-		break;
-	}
-	}
-}
-
 void Scene::handleSpotlightPosition(unsigned char key)
 {
 	switch (key) {
 		case GLUT_KEY_RIGHT:
 		{
-			m_lamp->setLightPosition(1, 0, 0);
+			this->setLampPosition(1, 0, 0);
 			break;
 		}
 		case GLUT_KEY_LEFT:
 		{
-			m_lamp->setLightPosition(-1, 0, 0);
-			break;
-		}
-		case GLUT_KEY_UP:
-		{
-			m_lamp->setLightPosition(0, 1, 0);
-			break;
-		}
-		case GLUT_KEY_DOWN:
-		{
-			m_lamp->setLightPosition(0, -1, 0);
+			this->setLampPosition(-1, 0, 0);
 			break;
 		}
 		case GLUT_KEY_PAGE_UP:
 		{
-			m_lamp->setLightPosition(0, 0, -1);
+			this->setLampPosition(0, 0, -1);
 			break;
 		}
 		case GLUT_KEY_PAGE_DOWN:
 		{
-			m_lamp->setLightPosition(0, 0, 1);
+			this->setLampPosition(0, 0, 1);
 			break;
 		}
 	}
@@ -621,37 +520,44 @@ void Scene::handleSpotlightPosition(unsigned char key)
 	this->draw();
 }
 
+
 void Scene::handleSpotlightDirection(unsigned char key)
 {
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 	{
 		m_lamp->setLightDirection(1, 0, 0);
+		m_lamp->rotate(1, 0, 0);
 		break;
 	}
 	case GLUT_KEY_LEFT:
 	{
 		m_lamp->setLightDirection(-1, 0, 0);
+		m_lamp->rotate(-1, 0, 0);
 		break;
 	}
 	case GLUT_KEY_UP:
 	{
 		m_lamp->setLightDirection(0, 1, 0);
+		m_lamp->rotate(0, 1, 0);
 		break;
 	}
 	case GLUT_KEY_DOWN:
 	{
 		m_lamp->setLightDirection(0, -1, 0);
+		m_lamp->rotate(0, -1, 0);
 		break;
 	}
 	case GLUT_KEY_PAGE_UP:
 	{
 		m_lamp->setLightDirection(0, 0, -1);
+		m_lamp->rotate(0, 0, -1);
 		break;
 	}
 	case GLUT_KEY_PAGE_DOWN:
 	{
 		m_lamp->setLightDirection(0, 0, 1);
+		m_lamp->rotate(0, 0, 1);
 		break;
 	}
 	}
@@ -734,8 +640,27 @@ void Scene::handleLightGlobalIntensity(unsigned char key)
 	this->draw();
 }
 
-void Scene::lightRotatePosition(int x, int y, int z) {
-	m_LightPositionX += 2 * x;
-	m_LightPositionY += 2 * y;
-	m_LightPositionZ += 2 * z;
+void Scene::handleSpotlightIntensity(unsigned char key)
+{
+	switch (key) {
+	case '+':
+	{
+		m_lamp->setIntensity(0.15);
+		break;
+	}
+	case '-':
+	{
+		m_lamp->setIntensity(-0.15);
+		break;
+	}
+	}
+
+	this->draw();
+}
+
+void Scene::setLampPosition(int x, int y, int z)
+{
+	m_lightPositionX += x;
+	m_lightPositionY += y;
+	m_lightPositionZ += z;
 }
