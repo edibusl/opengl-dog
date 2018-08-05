@@ -26,7 +26,7 @@ enum KeysControl {
 	CAMERA_LOOKAT = 2,	
 	CAMERA_DOGVIEW = 3,
 	LIGHT_DIRECTION = 4,
-	LIGHT_INTENSITY = 5,
+	LIGHT_GLOBAL_INTENSITY = 5,
 	MOVE_TAIL = 6,
 	MOVE_HEAD = 7,
 	SWITCH_COORDINATE_SYSTEM = 8,
@@ -53,6 +53,7 @@ private:
 	int m_LightPositionX;
 	int m_LightPositionY;
 	int m_LightPositionZ;
+	float m_lightGlobalIntensity;
 	bool m_bLightDiffuse;
 	bool m_bLightSpecular;
 	bool m_bShowCoordinateArrows;
@@ -84,5 +85,7 @@ private:
 	void handleSpotlightPosition(unsigned char key);
 	void handleSpotlightDirection(unsigned char key);
 	void lightRotatePosition(int x, int y, int z);
+	void handleLightGlobalIntensity(unsigned char key);
+	void setLightGlobalIntensity(float diff);
 };
 

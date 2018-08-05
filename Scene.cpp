@@ -36,6 +36,7 @@ string Scene::WINDOW_TITLE = "Maman 17 - Edi Buslovich";
 
 Scene::Scene(int argc, char** argv)
 {
+	m_lightGlobalIntensity = 0;
 	m_curKeysControl = KeysControl::NONE;
 
 	//Init all classes
@@ -112,15 +113,12 @@ void Scene::draw() {
 		Camera::lookAt();
 	}
 	
-
 	//Save the view matrix to be used later for eye position calculation
 	m_dog->saveViewMatrix();
-
 
 	//Lighting
 	this->initLight();
 	m_lamp->setLighting(m_bLightSpecular);
-
 	
 	//Draw room
 	glPushMatrix();
@@ -151,9 +149,9 @@ void Scene::draw() {
 
 void Scene::initLight()
 {
-	static float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
-	static float white[] = { 1.0, 1.0, 1.0, 1.0 };
-	static float specular[] = { 0, 0, 0, 1.0 };
+	float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
+	float white[] = { 1.0, 1.0, 1.0, 1.0 };
+	float specular[] = { 0, 0, 0, 1.0 };
 	m_LightPositionX = 0;
 	m_LightPositionY = 40;
 	m_LightPositionZ = 0;
@@ -168,9 +166,17 @@ void Scene::initLight()
 	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
 	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, Color::Yellow);
+	this->setLightGlobalIntensity(0);
+}
+
+void Scene::setLightGlobalIntensity(float diff)
+{
+	m_lightGlobalIntensity += diff;
+	float intensity[] = { 0.8 + m_lightGlobalIntensity, 0.8 + m_lightGlobalIntensity, 0.8 + m_lightGlobalIntensity, 1};
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, intensity);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, intensity);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, intensity);
 }
 
 void Scene::drawCoordinateArrows() {
@@ -229,7 +235,7 @@ void Scene::initMenu() {
 
 	int light = glutCreateMenu(::menuCallback);
 	glutAddMenuEntry("Control lamp direction", KeysControl::LIGHT_DIRECTION);
-	glutAddMenuEntry("Change light intensity", KeysControl::LIGHT_INTENSITY);
+	glutAddMenuEntry("Change global light intensity", KeysControl::LIGHT_GLOBAL_INTENSITY);
 
 	int dog = glutCreateMenu(::menuCallback);
 	glutAddMenuEntry("Move tail", KeysControl::MOVE_TAIL);
@@ -301,6 +307,11 @@ void Scene::drawKeysControlText() {
 			Utils::drawTextOnScreen("Control dog's head: ** Use keyboard's left/right keys to move head left and right ** Use up/down keys to move head up and down.");
 			break;
 		}
+		case KeysControl::LIGHT_GLOBAL_INTENSITY:
+		{
+			Utils::drawTextOnScreen("Control global light intensity: ** Use keyboard's +/- keys to control intensity.");
+			break;
+		}
 		case KeysControl::CAMERA_DOGVIEW:
 		{
 			if (m_bDogEyesView) {
@@ -317,35 +328,43 @@ void Scene::onKeyPress(unsigned char key, int x, int y) {
 		case 'p':
 		{
 			m_curKeysControl = KeysControl::CAMERA_POSITION;
-			break;
+			return;
 		}
 		case 'e':
 		{
 			m_curKeysControl = KeysControl::CAMERA_LOOKAT;
-			break;
+			return;
 		}
 		case 'd':
 		{
 			m_bLightDiffuse = !m_bLightDiffuse;
 			this->draw();
-			break;
+			return;
 		}
 		case 's':
 		{
 			m_bLightSpecular = !m_bLightSpecular;
 			this->draw();
-			break;
+			return;
 		}
 		case 'n':
 		{
 			m_curKeysControl = KeysControl::SPOTLIGHT_POSITION;
-			break;
+			return;
 		}
 		case 'm':
 		{
 			m_curKeysControl = KeysControl::SPOTLIGHT_DIRECTION;
-			break;
+			return;
 		}
+	}
+
+	switch (m_curKeysControl)
+	{
+		case KeysControl::LIGHT_GLOBAL_INTENSITY:
+			this->handleLightGlobalIntensity(key);
+			this->draw();
+			return;
 	}
 }
 
@@ -375,6 +394,9 @@ void Scene::onSpecialKeyPress(unsigned char key, int x, int y) {
 			break;
 		case KeysControl::SPOTLIGHT_DIRECTION:
 			this->handleSpotlightDirection(key);
+			break;
+		case KeysControl::LIGHT_GLOBAL_INTENSITY:
+			this->handleLightGlobalIntensity(key);
 			break;
 	}
 }
@@ -689,6 +711,24 @@ void Scene::handleMoveHead(unsigned char key)
 		m_dog->setNeckAngle(0, -4);
 		break;
 	}
+	}
+
+	this->draw();
+}
+
+void Scene::handleLightGlobalIntensity(unsigned char key)
+{
+	switch (key) {
+		case '+':
+		{
+			this->setLightGlobalIntensity(0.05);
+			break;
+		}
+		case '-':
+		{
+			this->setLightGlobalIntensity(-0.05);
+			break;
+		}
 	}
 
 	this->draw();
