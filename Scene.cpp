@@ -83,7 +83,7 @@ Scene::Scene(int argc, char** argv)
 
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
 	m_lamp = new Lamp();
-	m_lightPositionX = 0;
+	m_lightPositionX = -20;
 	m_lightPositionY = Scene::ROOM_HEIGHT;
 	m_lightPositionZ = -20;
 
@@ -122,16 +122,16 @@ void Scene::draw() {
 
 	//Lighting
 	this->initLight();
-	
+
+	//Draw lamp and set its light
+	m_lamp->draw(m_lightPositionX, m_lightPositionY, m_lightPositionZ);
+	m_lamp->setLighting();
+
 	//Draw room
 	glPushMatrix();
 	glTranslatef(-Scene::ROOM_WIDTH / 2, 0, -Scene::ROOM_WIDTH / 2);
 	m_room->draw();
 	glPopMatrix();
-
-	//Draw lamp and set its light
-	m_lamp->draw(m_lightPositionX, m_lightPositionY, m_lightPositionZ);
-	m_lamp->setLighting();
 
 	//Draw dog
 	m_dog->draw();

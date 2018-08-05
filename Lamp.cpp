@@ -7,8 +7,8 @@ Lamp::Lamp()
 	m_intensity = 0.35;
 
 	//Initial spotlight direction - direct to the dog's body
-	m_directionX = 25;
-	m_directionZ = -40;
+	m_directionX = -20;
+	m_directionZ = -20;
 }
 
 void Lamp::draw(int x, int y, int z)
