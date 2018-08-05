@@ -4,7 +4,7 @@ const int Lamp::CABLE_LENGTH = 60;
 
 Lamp::Lamp()
 {
-	m_intensity = 0;
+	m_intensity = 0.35;
 
 	//Initial spotlight direction - direct to the dog's body
 	m_directionX = 25;
@@ -65,7 +65,6 @@ void Lamp::draw(int x, int y, int z)
 
 void Lamp::setLighting()
 {
-	glEnable(GL_LIGHT1);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 20.0); //30 degress cutoff angle
 
 	//Position
@@ -79,21 +78,23 @@ void Lamp::setLighting()
 
 	//Intensity (diffuse / specular)
 	this->setIntensity(0);
+
+	glEnable(GL_LIGHT1);
 }
 
 void Lamp::setIntensity(float diff)
 {
 	m_intensity += diff;
-	if (m_intensity > 1)
+	if (m_intensity > 0.35)
 	{
-		m_intensity = 1;
+		m_intensity = 0.35;
 	}
-	else if (m_intensity < -1)
+	else if (m_intensity < 0)
 	{
-		m_intensity = -1;
+		m_intensity = 0;
 	}
 
-	float intensity[] = { 1.0 + m_intensity, 1.0 + m_intensity, 1.0 + m_intensity, 1 };
+	float intensity[] = { m_intensity, m_intensity, m_intensity, 1 };
 
 	glLightfv(GL_LIGHT1, GL_AMBIENT, intensity);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, intensity);

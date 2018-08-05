@@ -20,11 +20,14 @@ const GLfloat Color::Neck[] = { 0.5, 0.35, 0.05, 1.0 };
 const GLfloat Color::Head[] = { 0.5, 0.35, 0.05, 1.0 };
 const GLfloat Color::Ear[] = { 0.4, 0.35, 0.05, 1.0 };
 const GLfloat Color::Eye[] = { 0.05, 0.05, 0.05, 1.0 };
-const GLfloat Color::Mouth[] = { 0.3176, 0, 0 };
-const GLfloat Color::Nose[] = { 0.3176, 0.20392, 0.01568 };
+const GLfloat Color::Mouth[] = { 0.3176, 0, 0, 1.0 };
+const GLfloat Color::Nose[] = { 0.3176, 0.20392, 0.01568, 1.0 };
 
-const GLfloat Color::TableLeg[] = { 0.26666, 0.1372, 0 };
-const GLfloat Color::TableSurface[] = { 0.316, 0.184, 0.04 };
+const GLfloat Color::TableLeg[] = { 0.26666, 0.1372, 0, 1.0 };
+const GLfloat Color::TableSurface[] = { 0.316, 0.184, 0.04, 1.0 };
+
+const GLfloat Color::FloorPlate1[] = { 234 / 255.0, 154 / 201.0, 97 / 156.0, 1.0 };
+const GLfloat Color::FloorPlate2[] = { 206 / 255.0, 154/255.0, 97/255.0, 1.0 };
 
 
 /*

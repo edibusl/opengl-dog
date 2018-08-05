@@ -540,12 +540,12 @@ void Scene::handleSpotlightDirection(unsigned char key)
 	}
 	case GLUT_KEY_PAGE_UP:
 	{
-		m_lamp->setLightDirection(0, 0);
+		m_lamp->setLightDirection(0, 1);
 		break;
 	}
 	case GLUT_KEY_PAGE_DOWN:
 	{
-		m_lamp->setLightDirection(0, 0);
+		m_lamp->setLightDirection(0, -1);
 		break;
 	}
 	}
@@ -633,12 +633,12 @@ void Scene::handleSpotlightIntensity(unsigned char key)
 	switch (key) {
 	case '+':
 	{
-		m_lamp->setIntensity(0.15);
+		m_lamp->setIntensity(0.05);
 		break;
 	}
 	case '-':
 	{
-		m_lamp->setIntensity(-0.15);
+		m_lamp->setIntensity(-0.05);
 		break;
 	}
 	}

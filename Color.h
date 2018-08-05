@@ -34,4 +34,7 @@ public:
 	static const GLfloat TeapotAmbient[];
 	static const GLfloat TeapotDiffuse[];
 	static const GLfloat TeapotSpecular[];
+
+	static const GLfloat FloorPlate1[];
+	static const GLfloat FloorPlate2[];
 };

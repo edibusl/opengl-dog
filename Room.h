@@ -24,5 +24,6 @@ public:
 private:
 	void drawWall();
 	void drawHorizontalWall();
+	void drawFloor();
 };
 

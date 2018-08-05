@@ -49,10 +49,7 @@ void Room::draw() {
 	glPopMatrix();
 
 	//Floor
-	glBindTexture(GL_TEXTURE_2D, this->m_textureFloor);
-	glPushMatrix();
-	this->drawHorizontalWall();
-	glPopMatrix();
+	this->drawFloor();
 
 	//Ceiling
 	glBindTexture(GL_TEXTURE_2D, this->m_textureCeiling);
@@ -115,5 +112,44 @@ void Room::drawHorizontalWall()
 	glTexCoord2f(1.0, 0.0);
 	glVertex3f(0, 0, this->m_width);
 
+	glEnd();
+}
+
+void Room::drawFloor()
+{
+	glMaterialf(GL_FRONT, GL_SHININESS, 10.0);
+
+
+	glNormal3f(0, 1, 0);
+	glBegin(GL_QUADS);
+
+	int x, y;
+	int quadSize = 8;
+	for (int i = 0; i < (m_width / quadSize); i++)
+	{
+		for (int j = 0; j < (m_width / quadSize); j++)
+		{
+			if ((i + j) % 2 == 0)
+			{
+				glColor3fv(Color::FloorPlate1);
+				glMaterialfv(GL_FRONT, GL_AMBIENT, Color::FloorPlate1);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::FloorPlate1);
+			}
+			else
+			{
+				glColor3fv(Color::FloorPlate2);
+				glMaterialfv(GL_FRONT, GL_AMBIENT, Color::FloorPlate2);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::FloorPlate2);
+			}
+
+			x = i * quadSize;
+			y = j * quadSize;
+			glVertex3f(x, 0, y);
+			glVertex3f(x, 0, y + quadSize);
+			glVertex3f(x + quadSize, 0, y + quadSize);
+			glVertex3f(x + quadSize, 0, y);
+		}
+	}
+	
 	glEnd();
 }
