@@ -12,10 +12,6 @@ float Camera::VUP_Z;
 float Camera::ANGLE;
 float Camera::Z_NEAR;
 float Camera::Z_FAR;
-float Camera::CAMERA_ANGLE;
-float Camera::CAMERA_ANGLE_DEGREE;
-float Camera::THETA;
-float Camera::PHI;
 
 Camera::Camera()
 {
@@ -27,8 +23,6 @@ Camera::~Camera()
 }
 
 void Camera::init() {
-	Camera::CAMERA_ANGLE = 0.0;
-	Camera::CAMERA_ANGLE_DEGREE = 0.0;
 	Camera::ANGLE = 90.0;
 	Camera::Z_NEAR = 5.0;
 	Camera::Z_FAR = 205.0;
@@ -41,17 +35,15 @@ void Camera::init() {
 	Camera::VUP_X = 0;
 	Camera::VUP_Y = 1;
 	Camera::VUP_Z = 0;
-	Camera::THETA = 165.00f;
-	Camera::PHI = 00.00f;
 }
 
-void Camera::rotatePosition(int x, int y, int z) {
+void Camera::changePosition(int x, int y, int z) {
 	Camera::EYE_X += x;
 	Camera::EYE_Y += y;
 	Camera::EYE_Z += z;
 }
 
-void Camera::rotateLookingPoint(int x, int y, int z) {
+void Camera::changeLookingPoint(int x, int y, int z) {
 	Camera::LOOK_AT_X += x;
 	Camera::LOOK_AT_Y += y;
 	Camera::LOOK_AT_Z += z;

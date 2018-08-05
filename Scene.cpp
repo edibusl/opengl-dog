@@ -405,7 +405,7 @@ void Scene::handleCameraLookAt(unsigned char key)
 	switch (key) {
 		case GLUT_KEY_RIGHT:
 		{
-			Camera::rotateLookingPoint(1, 0, 0);
+			Camera::changeLookingPoint(1, 0, 0);
 			Camera::lookAt();
 			this->draw();
 
@@ -413,7 +413,7 @@ void Scene::handleCameraLookAt(unsigned char key)
 		}
 		case GLUT_KEY_LEFT:
 		{
-			Camera::rotateLookingPoint(-1, 0, 0);
+			Camera::changeLookingPoint(-1, 0, 0);
 			Camera::lookAt();
 			this->draw();
 
@@ -421,7 +421,7 @@ void Scene::handleCameraLookAt(unsigned char key)
 		}
 		case GLUT_KEY_UP:
 		{
-			Camera::rotateLookingPoint(0, 1, 0);
+			Camera::changeLookingPoint(0, 1, 0);
 			Camera::lookAt();
 			this->draw();
 
@@ -429,7 +429,7 @@ void Scene::handleCameraLookAt(unsigned char key)
 		}
 		case GLUT_KEY_DOWN:
 		{
-			Camera::rotateLookingPoint(0, -1, 0);
+			Camera::changeLookingPoint(0, -1, 0);
 			Camera::lookAt();
 			this->draw();
 
@@ -443,7 +443,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 	{
-		Camera::rotatePosition(1, 0, 0);
+		Camera::changePosition(1, 0, 0);
 		Camera::lookAt();
 		this->draw();
 
@@ -451,7 +451,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 	case GLUT_KEY_LEFT:
 	{
-		Camera::rotatePosition(-1, 0, 0);
+		Camera::changePosition(-1, 0, 0);
 		Camera::lookAt();
 		this->draw();
 
@@ -459,7 +459,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 	case GLUT_KEY_UP:
 	{
-		Camera::rotatePosition(0, 1, 0);
+		Camera::changePosition(0, 1, 0);
 		Camera::lookAt();
 		this->draw();
 
@@ -467,7 +467,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 	case GLUT_KEY_DOWN:
 	{
-		Camera::rotatePosition(0, -1, 0);
+		Camera::changePosition(0, -1, 0);
 		Camera::lookAt();
 		this->draw();
 
@@ -475,7 +475,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 	case GLUT_KEY_PAGE_UP:
 	{
-		Camera::rotatePosition(0, 0, -1);
+		Camera::changePosition(0, 0, -1);
 		Camera::lookAt();
 		this->draw();
 
@@ -483,7 +483,7 @@ void Scene::handleCameraPosition(unsigned char key)
 	}
 	case GLUT_KEY_PAGE_DOWN:
 	{
-		Camera::rotatePosition(0, 0, 1);
+		Camera::changePosition(0, 0, 1);
 		Camera::lookAt();
 		this->draw();
 
