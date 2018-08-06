@@ -11,34 +11,26 @@
 class Dog
 {
 private:
-	int moveNum;
-	int direction;
-	static float ROT_ANGLE;//angle made w.r.t hip when the animal moves
-	float BASE;
-	float SLICES;
-	float STACKS;
-	bool canMove;
-	float LEG_X;//Distance of leg from the center of the body in X direction
-	float LEG_Y;//Distance of leg from the center of the body in Y direction
-	float LEG_Z;//Distance of leg from the center of the body in Z direction
-	float BODY_LENGTH;
-	float BODY_WIDTH;
+	float m_baseLength;
+	float m_slices;
+	float m_stacks;
+	float m_legX; //Distance of leg from the center of the body in X direction
+	float m_legY; //Distance of leg from the center of the body in Y direction
+	float m_legZ; //Distance of leg from the center of the body in Z direction
+	float m_bodyLength;
+	float m_bodyWidth;
 	
-	float NECK_LENGTH;
-	float NECK_HEIGHT;
-	float NECK_WIDTH;
-	float HEAD_HEIGHT;
-	float HEAD_RADIUS;
-	float HEAD_WIDTH;
-	float UPPER_HEAD_HEIGHT;
-	float UPPER_HEAD_LENGTH;
-	float UPPER_HEAD_WIDTH;
-	float EYE_RADIUS;
-	float TAIL_LENGTH;
-	float TAIL_WIDTH;
-	float TAIL_HEIGHT;
-	float x_pos;
-	float z_pos;
+	float m_neckLength;
+	float m_neckHeight;
+	float m_neckWidth;
+	float m_headRadius;
+	float m_tailLength;
+	float m_tailWidth;
+	float m_tailHeight;
+
+	float m_dogPosX;
+	float m_dogPosZ;
+	float m_dogPosY;
 
 	float m_neckAngleZ;
 	float m_neckAngleY;
@@ -46,17 +38,15 @@ private:
 	float m_tailAngleZ;
 	GLfloat* m_eyesPosition;
 	GLfloat* m_eyesLookAt;
-	float* m_viewInvMatrix;
-	FaceType m_faceType;
+	float* m_viewInvMatrix; //Inverted matrix of the view tranformation (the model-view matrix right after applying lookAt)
 
 public:
-	float BODY_HEIGHT;
-	DogLeg legs[4];
-	float y_pos;
+	float m_bodyHeight;
+	DogLeg m_legs[4];
 
 public:
 	Dog();
-	Dog(int base);
+	Dog(int baseLength);
 	void draw();
 	void setPosition(float x, float y, float z);
 	void setTailAngle(int yDiff, int zDiff);
@@ -71,7 +61,5 @@ private:
 	void drawFace();
 	void drawTail();
 	void drawAllLegs();
-	void move();
-	void resetAngles();
 	void calcEyesPosition();
 };

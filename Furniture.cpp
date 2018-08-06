@@ -29,13 +29,13 @@ void Furniture::draw() {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::TableLeg);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TableLeg);
 
-	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
+	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ);
 	glTranslatef(TableSurfaceSize, 0, 0);
-	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
+	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ);
 	glTranslatef(0, 0, TableSurfaceSize);
-	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
+	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ);
 	glTranslatef(-TableSurfaceSize, 0, 0);
-	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ, FaceType::SOLID);
+	Utils::drawCube(TableLegSizeX, TableLegSizeY, TableLegSizeZ);
 	glTranslatef(0, 0, -TableSurfaceSize);
 
 	//Table surface
@@ -46,7 +46,7 @@ void Furniture::draw() {
 	glPushMatrix();
 	glTranslatef(TableSurfaceSize / 2, (TableLegSizeY / 2) - (TableSurfaceThickness / 2), TableSurfaceSize / 2);
 	glRotatef(90, 0, 1, 0);
-	Utils::drawCube(TableSurfaceSize, TableSurfaceThickness, TableSurfaceSize, FaceType::SOLID);
+	Utils::drawCube(TableSurfaceSize, TableSurfaceThickness, TableSurfaceSize);
 	glPopMatrix();
 
 	//Teapot

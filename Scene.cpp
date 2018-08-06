@@ -1,7 +1,5 @@
 #include "Scene.h"
 
-
-
 /*
 We can't bind GL callbacks to "this", so this is a solution using a 
 binding to regular C functions that wrap call to the instance's functions
@@ -39,12 +37,13 @@ Scene::Scene(int argc, char** argv)
 	m_lightGlobalIntensity = 0;
 	m_curKeysControl = KeysControl::NONE;
 
-	//Init all classes
+	//Init classes
 	Camera::init();
 	AppWindow::init();
 
 	glutInit(&argc, argv);
 	
+	//Init viewing window
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	AppWindow::WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 	AppWindow::HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
@@ -59,7 +58,7 @@ Scene::Scene(int argc, char** argv)
 	glutInitWindowPosition(AppWindow::TOP, AppWindow::LEFT);
 	glutCreateWindow(WINDOW_TITLE.c_str());
 
-	//Enable depth testing when rendering objects
+	//Enable depth testing when rendering objects (z-buffer)
 	glEnable(GL_DEPTH_TEST);
 
 	//Set perspective
@@ -70,25 +69,23 @@ Scene::Scene(int argc, char** argv)
 	float aspect = (float)w / h;
 	gluPerspective(Camera::ANGLE, aspect, Camera::Z_NEAR, Camera::Z_FAR);
 
-	//Coordinate system arrows
+	//Init vars
 	m_bShowCoordinateArrows = false;
-
-	//Dog eye view
 	m_bDogEyesView = false;
 
+	//Create dog
 	m_dog = new Dog(Scene::DOG_SIZE);
-	
-	//TODO - Check dog's y position (it's for some reason above floor)
-	m_dog->setPosition(-10, m_dog->legs[0].UPPER_LEN + m_dog->legs[0].LOWER_LEN + m_dog->BODY_HEIGHT / 2.0f, 10);
+	m_dog->setPosition(-10, m_dog->m_legs[0].m_upperLen + m_dog->m_legs[0].m_lowerLen + m_dog->m_bodyHeight / 2.0f - 2, 10);
 
+	//Create room, lamp and furniture
 	m_room = new Room(Scene::ROOM_WIDTH, Scene::ROOM_HEIGHT);
 	m_lamp = new Lamp();
 	m_lightPositionX = -20;
 	m_lightPositionY = Scene::ROOM_HEIGHT;
 	m_lightPositionZ = -20;
-
 	m_furniture = new Furniture(25, 0, -40);
 
+	//Set glut callbacks
 	::g_CurrentInstance = this;
 	glutDisplayFunc(::drawCallback);
 	glutReshapeFunc(::reshapeCallback);
@@ -100,8 +97,8 @@ Scene::Scene(int argc, char** argv)
 	glutMainLoop();
 }
 
-
 void Scene::draw() {
+	//Reset colors and model view matrix
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -113,7 +110,8 @@ void Scene::draw() {
 		GLfloat* eyesLookat = m_dog->getEyesLookAt();
 		Camera::lookAt(eyesPos[0], eyesPos[1], eyesPos[2], eyesLookat[0], eyesLookat[1], eyesLookat[2]);
 	}
-	else {
+	else
+	{
 		Camera::lookAt();
 	}
 	
@@ -153,15 +151,12 @@ void Scene::draw() {
 
 void Scene::initLight()
 {
-	float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
-	float white[] = { 1.0, 1.0, 1.0, 1.0 };
-	float specular[] = { 0, 0, 0, 1.0 };
-
 	//General lighting settings
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_SMOOTH); //Gourad
 
 	//Global ambient
+	//float globalAmbient[] = { 0.8, 0.8, 0.8, 1.0 };
 	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
 	glEnable(GL_LIGHT0);
@@ -212,10 +207,10 @@ void Scene::reshape(int width, int height) {
 	AppWindow::WIDTH = width;
 	AppWindow::HEIGHT = height;
 	AppWindow::ASPECT = (float)AppWindow::WIDTH / AppWindow::HEIGHT;
-	AppWindow::WORLD_FRONT_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_NEAR);
-	AppWindow::WORLD_FRONT_WIDTH = AppWindow::WORLD_FRONT_HEIGHT*AppWindow::ASPECT;
-	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2)))*(Camera::Z_FAR);
-	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT*AppWindow::ASPECT;
+	AppWindow::WORLD_FRONT_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2))) * (Camera::Z_NEAR);
+	AppWindow::WORLD_FRONT_WIDTH = AppWindow::WORLD_FRONT_HEIGHT * AppWindow::ASPECT;
+	AppWindow::WORLD_BACK_HEIGHT = 2 * (tan(Utils::radians(Camera::ANGLE / 2))) * (Camera::Z_FAR);
+	AppWindow::WORLD_BACK_WIDTH = AppWindow::WORLD_BACK_HEIGHT * AppWindow::ASPECT;
 	glViewport(0, 0, AppWindow::WIDTH, AppWindow::HEIGHT);
 }
 
@@ -569,12 +564,12 @@ void Scene::handleMoveTail(unsigned char key)
 		}
 		case GLUT_KEY_UP:
 		{
-			m_dog->setTailAngle(0, 2);
+			m_dog->setTailAngle(0, -2);
 			break;
 		}
 		case GLUT_KEY_DOWN:
 		{
-			m_dog->setTailAngle(0, -2);
+			m_dog->setTailAngle(0, 2);
 			break;
 		}
 	}
@@ -587,12 +582,12 @@ void Scene::handleMoveHead(unsigned char key)
 	switch (key) {
 	case GLUT_KEY_RIGHT:
 	{
-		m_dog->setNeckAngle(4, 0);
+		m_dog->setNeckAngle(-4, 0);
 		break;
 	}
 	case GLUT_KEY_LEFT:
 	{
-		m_dog->setNeckAngle(-4, 0);
+		m_dog->setNeckAngle(4, 0);
 		break;
 	}
 	case GLUT_KEY_UP:

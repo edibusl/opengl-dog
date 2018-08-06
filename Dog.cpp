@@ -1,53 +1,33 @@
 #include "Dog.h"
 
 
-
-float Dog::ROT_ANGLE = -70.0f; // Angle of ratation after taking one step ahead.
 Dog::Dog() {}
 
-
-/*
-Ctor - Takes the base length(Torso legth) and setup all angles.
-*/
-Dog::Dog(int base) {
-	this->BASE = base;
-	this->canMove = false;
-	this->SLICES = 50;
-	this->STACKS = 50;
-	this->moveNum = 1;
-	this->BODY_LENGTH = this->BASE;
-	this->BODY_HEIGHT = this->BASE * 0.3;
-	this->BODY_WIDTH = this->BASE * 0.3;
-	this->TAIL_LENGTH = this->BODY_LENGTH * 0.3;
-	this->TAIL_WIDTH = this->BODY_WIDTH * 0.15;
-	this->TAIL_HEIGHT = this->TAIL_WIDTH;
-	this->LEG_X = this->BODY_LENGTH * 0.3f;
-	this->LEG_Y = 0.0f;
-	this->LEG_Z = this->BODY_WIDTH * 0.5f;
-	for (int i = 0; i < 4; i++) {
-		legs[i] = DogLeg(-90.0, 25.0, -90.0, this->BODY_LENGTH * 0.30, this->BODY_HEIGHT * 0.2, this->BODY_WIDTH * 0.2,
-			this->BODY_LENGTH * 0.20, this->BODY_HEIGHT * 0.2, this->BODY_WIDTH * 0.2);// Run a for loop here
-		legs[i].FEET_ANGLE = -legs[i].UPPER_ANGLE - legs[i].LOWER_ANGLE;
-		legs[i].FEET_LEN = legs[i].LOWER_THICKNESS * 1.5;
-		legs[i].FEET_THICKNESS = legs[i].LOWER_LEN * 0.4f;
-		legs[i].FEET_WIDTH = legs[i].LOWER_WIDTH;
-		if (i % 2 == 0) {
-			legs[i].LOWER_ANGLE = 0.0f;
-		}
+Dog::Dog(int baseLength) {
+	this->m_baseLength = baseLength;
+	this->m_slices = 50;
+	this->m_stacks = 50;
+	this->m_bodyLength = this->m_baseLength;
+	this->m_bodyHeight = this->m_baseLength * 0.3;
+	this->m_bodyWidth = this->m_baseLength * 0.3;
+	this->m_tailLength = this->m_bodyLength * 0.3;
+	this->m_tailWidth = this->m_bodyWidth * 0.15;
+	this->m_tailHeight = this->m_tailWidth;
+	this->m_legX = this->m_bodyLength * 0.3f;
+	this->m_legY = 0.0f;
+	this->m_legZ = this->m_bodyWidth * 0.5f;
+	
+	//Create 4 legs
+	for (int i = 0; i < 4; i++)
+	{
+		m_legs[i] = DogLeg(i, m_bodyLength, m_bodyHeight, m_bodyWidth);
 	}
-	this->NECK_LENGTH = BASE  *  0.45f;
-	this->NECK_WIDTH = this->BODY_WIDTH;
-	this->NECK_HEIGHT = this->BODY_HEIGHT * 0.4f;
-	this->HEAD_RADIUS = this->NECK_LENGTH * 0.5f;
-	this->HEAD_HEIGHT = this->NECK_HEIGHT;
-	this->HEAD_WIDTH = this->NECK_WIDTH;
-	this->UPPER_HEAD_LENGTH = this->NECK_LENGTH / 2;
-	this->UPPER_HEAD_HEIGHT = this->NECK_HEIGHT  *  2;
-	this->UPPER_HEAD_WIDTH = this->NECK_WIDTH;
-	this->EYE_RADIUS = this->UPPER_HEAD_HEIGHT * 0.20;
-	this->resetParameters(base);
+	this->m_neckLength = m_baseLength  *  0.45f;
+	this->m_neckWidth = this->m_bodyWidth;
+	this->m_neckHeight = this->m_bodyHeight * 0.4f;
+	this->m_headRadius = this->m_neckLength * 0.5f;
+	this->resetParameters(baseLength);
 
-	this->m_faceType = FaceType::SOLID;
 	m_viewInvMatrix = new float[16];
 }
 
@@ -59,25 +39,12 @@ void Dog::resetParameters(int base) {
 	m_tailAngleY = 0;
 }
 
-//Resets all leg angles
-void Dog::resetAngles() {
-	for (int i = 0; i < 4; i++) {
-		legs[i] = DogLeg(-90.0, 25.0, -90.0, this->BODY_LENGTH * 0.40, this->BODY_HEIGHT * 0.4, this->BODY_WIDTH * 0.4,
-			this->BODY_LENGTH * 0.25, this->BODY_HEIGHT * 0.4, this->BODY_WIDTH * 0.4);// Run a for loop here
-		legs[i].FEET_ANGLE = -legs[i].UPPER_ANGLE - legs[i].LOWER_ANGLE;
-		legs[i].FEET_LEN = legs[i].LOWER_THICKNESS * 1.5;
-		legs[i].FEET_THICKNESS = legs[i].LOWER_LEN * 0.4f;
-		legs[i].FEET_WIDTH = legs[i].LOWER_WIDTH;
-		if (i % 2 == 0) {
-			legs[i].LOWER_ANGLE = 0.0f;
-		}
-	}
-}
 
 //Draw the whole dog
 void Dog::draw() {
 	glPushMatrix();
-	glTranslatef(x_pos, y_pos, z_pos);
+	glTranslatef(m_dogPosX, m_dogPosY, m_dogPosZ);
+
 	this->drawAllLegs();
 	this->drawTorso();
 	this->drawTail();
@@ -95,7 +62,7 @@ void Dog::drawTorso() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::TorsoDiffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Black);
 
-	Utils::drawEllipsoid(BODY_LENGTH * 0.7, BODY_HEIGHT * 0.8, BODY_WIDTH, 10, 10);
+	Utils::drawEllipsoid(m_bodyLength * 0.7, m_bodyHeight * 0.8, m_bodyWidth, 10, 10);
 	glPopMatrix();
 }
 
@@ -103,7 +70,7 @@ void Dog::drawFace() {
 	glPushMatrix();
 	
 	//Neck
-	glTranslatef(this->BODY_LENGTH * 0.65, BODY_HEIGHT / 2.0f, 0.0f);
+	glTranslatef(this->m_bodyLength * 0.65, m_bodyHeight / 2.0f, 0.0f);
 	glPushMatrix();
 	
 	glColor3fv(Color::Neck);
@@ -112,7 +79,7 @@ void Dog::drawFace() {
 	
 	glRotatef(45 + this->m_neckAngleZ, 0, 0, 1); 
 	glRotatef(90, 0, 1, 0);
-	Utils::drawEllipsoid(NECK_WIDTH / 2, NECK_WIDTH * 0.4, NECK_LENGTH * 0.5, 100, 100);
+	Utils::drawEllipsoid(m_neckWidth / 2, m_neckWidth * 0.4, m_neckLength * 0.5, 100, 100);
 
 	glPopMatrix();
 
@@ -120,12 +87,12 @@ void Dog::drawFace() {
 	glRotatef(this->m_neckAngleZ, 0, 0, 1);
 	glRotatef(this->m_neckAngleY, 0, 1, 0);
 
-	glTranslatef(this->NECK_LENGTH * 0.3, NECK_HEIGHT * 0.8, 0.0f);
+	glTranslatef(this->m_neckLength * 0.3, m_neckHeight * 0.8, 0.0f);
 	glColor3fv(Color::Head);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Head);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Head);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Black);
-	Utils::drawSphere(HEAD_RADIUS, this->SLICES, this->STACKS, FaceType::SOLID);
+	Utils::drawSphere(m_headRadius, this->m_slices, this->m_stacks);
 
 	//Ears
 	glColor3fv(Color::Ear);
@@ -133,15 +100,15 @@ void Dog::drawFace() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Ear);
 	
 	glPushMatrix();
-	glTranslatef(0, HEAD_RADIUS * 0.6, HEAD_RADIUS * 0.7);
+	glTranslatef(0, m_headRadius * 0.6, m_headRadius * 0.7);
 	glRotatef(45, 1, 0, 0);	
-	Utils::drawEllipsoid(1, 2, 1, this->SLICES, this->STACKS); 
+	Utils::drawEllipsoid(1, 2, 1, this->m_slices, this->m_stacks); 
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(0, HEAD_RADIUS * 0.6, -HEAD_RADIUS * 0.7);
+	glTranslatef(0, m_headRadius * 0.6, -m_headRadius * 0.7);
 	glRotatef(-45, 1, 0, 0);
-	Utils::drawEllipsoid(1, 2, 1, this->SLICES, this->STACKS);
+	Utils::drawEllipsoid(1, 2, 1, this->m_slices, this->m_stacks);
 	glPopMatrix();
 
 	//Eyes
@@ -150,13 +117,13 @@ void Dog::drawFace() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Eye);
 
 	glPushMatrix();
-	glTranslatef(HEAD_RADIUS * 0.75, HEAD_RADIUS * 0.15, HEAD_RADIUS * 0.3);
-	Utils::drawEllipsoid(1, 1, 1, this->SLICES, this->STACKS);
+	glTranslatef(m_headRadius * 0.75, m_headRadius * 0.15, m_headRadius * 0.3);
+	Utils::drawEllipsoid(1, 1, 1, this->m_slices, this->m_stacks);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(HEAD_RADIUS * 0.75, HEAD_RADIUS * 0.15, -HEAD_RADIUS * 0.3);
-	Utils::drawEllipsoid(1, 1, 1, this->SLICES, this->STACKS);
+	glTranslatef(m_headRadius * 0.75, m_headRadius * 0.15, -m_headRadius * 0.3);
+	Utils::drawEllipsoid(1, 1, 1, this->m_slices, this->m_stacks);
 	glPopMatrix();
 
 	//Mouth
@@ -165,8 +132,8 @@ void Dog::drawFace() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Mouth);
 
 	glPushMatrix();
-	glTranslatef(HEAD_RADIUS * 0.8, -HEAD_RADIUS * 0.55, 0);
-	Utils::drawEllipsoid(0.5, 0.5, 1.5, this->SLICES, this->STACKS);
+	glTranslatef(m_headRadius * 0.8, -m_headRadius * 0.55, 0);
+	Utils::drawEllipsoid(0.5, 0.5, 1.5, this->m_slices, this->m_stacks);
 	glPopMatrix();
 
 	//Nose
@@ -175,12 +142,12 @@ void Dog::drawFace() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Nose);
 
 	glPushMatrix();
-	glTranslatef(HEAD_RADIUS * 0.8, -HEAD_RADIUS * 0.2, 0);
+	glTranslatef(m_headRadius * 0.8, -m_headRadius * 0.2, 0);
 
 	//Calculate eye's position in world cooordinates (according to nose's position)
 	this->calcEyesPosition();
 
-	Utils::drawEllipsoid(2.5, 1, 1, SLICES, STACKS);
+	Utils::drawEllipsoid(2.5, 1, 1, m_slices, m_stacks);
 	glPopMatrix();
 
 	glPopMatrix();
@@ -188,7 +155,7 @@ void Dog::drawFace() {
 
 void Dog::drawTail() {
 	glPushMatrix();
-	glTranslatef(-this->BODY_LENGTH / 2.0f - this->TAIL_LENGTH / 2.0f, 2, 0.0f);
+	glTranslatef(-this->m_bodyLength / 2.0f - this->m_tailLength / 2.0f, 2, 0.0f);
 	
 	//Rotate according to user's selected angle
 	glRotatef(m_tailAngleZ, 0, 0, 1);
@@ -198,19 +165,19 @@ void Dog::drawTail() {
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Tail);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Tail);
 
-	//Utils::drawCube(this->TAIL_LENGTH, this->TAIL_HEIGHT, this->TAIL_WIDTH, this->m_faceType);
-	Utils::drawEllipsoid(this->TAIL_LENGTH, this->TAIL_HEIGHT, this->TAIL_WIDTH, SLICES, STACKS);
+	Utils::drawEllipsoid(this->m_tailLength, this->m_tailHeight, this->m_tailWidth, m_slices, m_stacks);
 	glPopMatrix();
 }
 
 void Dog::drawAllLegs() {
-	//For storing the legs in order
+	//Store the legs in order
 	int v[4][3] = {
-		{ 1,1,1 },
-	{ -1,-1,1 },
-	{ 1,1,-1 },
-	{ -1,-1,-1 }
+		{	 1,	 1,	 1 },
+		{	-1,	-1,	 1 },
+		{	 1,	 1,	-1 },
+		{	-1,	-1,	-1 }
 	};
+
 	for (int i = 0; i < 4; i++) {
 		glPushMatrix();
 
@@ -218,83 +185,20 @@ void Dog::drawAllLegs() {
 		glMaterialfv(GL_FRONT, GL_AMBIENT, Color::Leg);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, Color::Leg);
 
-		glTranslatef(v[i][0] * LEG_X, v[i][1] * LEG_Y, v[i][2] * LEG_Z);
-		legs[i].FEET_ANGLE = -legs[i].LOWER_ANGLE - legs[i].UPPER_ANGLE;
-		legs[i].drawLeg();
+		glTranslatef(v[i][0] * m_legX, v[i][1] * m_legY, v[i][2] * m_legZ);
+		m_legs[i].draw();
+
 		glPopMatrix();
 	}
 }
 
-//Set the dog's position (center of mass position)
+//Set the dog's position (center of torso position)
 void Dog::setPosition(float x, float y, float z) {
-	this->x_pos = x;
-	this->y_pos = y;
-	this->z_pos = z;
+	this->m_dogPosX = x;
+	this->m_dogPosY = y;
+	this->m_dogPosZ = z;
 }
 
-//Change the angle between legs while dog moves.
-void Dog::move() {
-	int v[4][3] = {
-		{ 1,1,1 },
-	{ -1,-1,1 },
-	{ 1,1,-1 },
-	{ -1,-1,-1 }
-	};
-	//First move the Torso
-	this->x_pos += this->direction * this->legs[0].UPPER_LEN / tan(Utils::degreeToRadians(Utils::abs(Dog::ROT_ANGLE)));
-	if (moveNum == 1 && this->direction == 1) {
-		//Move Front Face
-		legs[0].UPPER_ANGLE = Dog::ROT_ANGLE;
-		legs[0].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[1].UPPER_ANGLE = Dog::ROT_ANGLE;
-
-		//Keep back face as it is
-		legs[2].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[2].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		legs[3].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-	}
-	if ((moveNum == 0 && this->direction == 1)) {
-		//Move Front Face
-		legs[2].UPPER_ANGLE = Dog::ROT_ANGLE;
-		legs[2].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[3].UPPER_ANGLE = Dog::ROT_ANGLE;
-
-		//Keep back face as it is
-		legs[0].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[0].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		legs[1].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		//this->resetAngles();
-	}
-	if (moveNum == 0 && this->direction == -1) {
-		//Move Front Face
-		legs[0].UPPER_ANGLE = Dog::ROT_ANGLE;
-		legs[0].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[1].UPPER_ANGLE = Dog::ROT_ANGLE;
-
-		//Keep back face as it is
-		legs[2].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[2].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		legs[3].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-	}
-	if ((moveNum == 1 && this->direction == -1)) {
-		//Move Front Face
-		legs[2].UPPER_ANGLE = Dog::ROT_ANGLE;
-		legs[2].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[3].UPPER_ANGLE = Dog::ROT_ANGLE;
-
-		//Keep back face as it is
-		legs[0].LOWER_ANGLE = -90.0f - Dog::ROT_ANGLE;
-		legs[0].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		legs[1].UPPER_ANGLE = -180.0f - Dog::ROT_ANGLE;
-		//this->resetAngles();
-	}
-	if (moveNum == 2) {
-		//Set back to the original position
-		this->resetAngles();
-	}
-	moveNum++;
-	moveNum %= 3;
-}
 
 void Dog::setTailAngle(int yDiff, int zDiff)
 {

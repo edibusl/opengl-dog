@@ -9,19 +9,14 @@
 
 using namespace std;
 
-enum FaceType { SOLID, WIRED };
-
 class Utils
 {
 public:
 	static float radians(float degrees);
 	static float degreeToRadians(float degrees);
-	static void drawCube(float length, float width, float height, FaceType faceType);
+	static void drawCube(float length /*x*/, float height /*y*/, float width /*z*/);
 
-	static void drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/);
-	static void drawWireCube(float length/*x*/, float height/*y*/, float width/*z*/);
-
-	static void drawSphere(float radius, float slices, float stacks, FaceType faceType);
+	static void drawSphere(float radius, float slices, float stacks);
 	static float abs(float a);
 	static void drawText(GLfloat x, GLfloat y, GLfloat z, string text);
 	static void drawTextOnScreen(string text);

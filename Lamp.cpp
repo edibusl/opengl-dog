@@ -43,7 +43,7 @@ void Lamp::draw(int x, int y, int z)
 	glMaterialfv(GL_FRONT, GL_SPECULAR, Color::Yellow);
 
 
-	Utils::drawSphere(4, 32, 32, FaceType::SOLID);
+	Utils::drawSphere(4, 32, 32);
 	glPopMatrix();
 
 	//Draw the lamp's base cone

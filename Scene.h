@@ -61,9 +61,7 @@ private:
 public:
 	Scene(int argc, char** argv);
 
-	void init();
 	void draw();
-
 	void drawCoordinateArrows();
 
 	void reshape(int width, int height);

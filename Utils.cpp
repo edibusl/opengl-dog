@@ -21,16 +21,7 @@ float Utils::degreeToRadians(float degrees) {
 	return degrees / 180 * PI;
 }
 
-void Utils::drawCube(float length, float width, float height, FaceType faceType) {
-	if (faceType == FaceType::SOLID) {
-		Utils::drawSolidCube(length, width, height);
-	}
-	else {
-		Utils::drawWireCube(length, width, height);
-	}
-}
-
-void Utils::drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/) {
+void Utils::drawCube(float length, float height, float width) {
 	glBegin(GL_QUADS);
 	
 	glNormal3f(0, 1.0, 0.0);
@@ -108,51 +99,8 @@ void Utils::drawSolidCube(float length/*x*/, float height/*y*/, float width/*z*/
 	glEnd();
 }
 
-void Utils::drawWireCube(float length/*x*/, float height/*y*/, float width/*z*/) {
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-0.50000*length, -0.50000*height, 0.50000*width);
-	glVertex3f(0.50000*length, -0.50000*height, 0.50000*width);
-	glVertex3f(0.50000*length, 0.50000*height, 0.50000*width);
-	glVertex3f(-0.50000*length, 0.50000*height, 0.50000*width);
-	glVertex3f(-0.50000*length, -0.50000*height, 0.50000*width);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-0.50000*length, 0.50000*height, 0.50000*width);
-	glVertex3f(-0.50000*length, 0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, 0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, 0.50000*height, 0.50000*width);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-0.50000*length, 0.50000*height, -0.50000*width);
-	glVertex3f(-0.50000*length, -0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, -0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, 0.50000*height, -0.50000*width);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-0.50000*length, -0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, -0.50000*height, -0.50000*width);
-	glVertex3f(0.50000*length, -0.50000*height, 0.50000*width);
-	glVertex3f(-0.50000*length, -0.50000*height, 0.50000*width);
-	glVertex3f(-0.50000*length, -0.50000*height, -0.50000*width);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(0.500000*length, -0.50000*height, 0.50000*width);
-	glVertex3f(0.50000*length, -0.50000*height, -0.50000*width);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(-0.50000*length, -0.50000*height, -0.50000*width);
-	glVertex3f(-0.50000*length, -0.50000*height, 0.50000*width);
-	glEnd();
-
-}
-
-void Utils::drawSphere(float radius, float slices, float stacks, FaceType faceType) {
-	if (faceType == FaceType::SOLID) {
-		glutSolidSphere(radius, slices, stacks);
-	}
-	else {
-		glutWireSphere(radius, slices, stacks);
-	}
+void Utils::drawSphere(float radius, float slices, float stacks) {
+	glutSolidSphere(radius, slices, stacks);
 }
 
 float Utils::abs(float a) {
@@ -449,6 +397,6 @@ void Utils::debugDrawSomething(float x, float y, float z, int size)
 {
 	glPushMatrix();
 	glTranslatef(x, y, z);
-	Utils::drawCube(size, size, size, FaceType::SOLID);
+	Utils::drawCube(size, size, size);
 	glPopMatrix();
 }
